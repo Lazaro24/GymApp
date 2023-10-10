@@ -1,0 +1,418 @@
+﻿@using Newtonsoft.Json
+@model GymApp.Models.Entities.GetClientes
+@{
+    ViewBag.Title = "GYM";
+}
+<!-- Inicio Formulario de listado de clientes-->
+<div class="card" style="max-width: 100%;">
+    <div class="card-header">
+        <div class="container">
+            <div class="row">
+                <div class="col align-content-lg-center">
+                    <h4>Clientes</h4>
+                </div>
+                <div class="col-md-auto">
+                    <button type="button" onclick="ClientesOper.CargaFormaNuevo();" class="btn btn-sm btn-success">
+                        <i class="fa fa-plus"></i> Nuevo
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="form-group">
+            <table class="table table-hover table-sm">
+                <thead class="bg-secondary text-white">
+                    <tr>
+                        <th class="header-tablas align-middle" style="display:none;">CODIGO</th>
+                        <th class="header-tablas align-middle" width="40%">NOMBRE</th>
+                        <th class="header-tablas align-middle" width="10%">TELÉFONO</th>
+                        <th class="header-tablas align-middle" width="10%">NIT</th>
+                        <th class="header-tablas align-middle" width="15%">DPI</th>
+                        <th class="header-tablas align-middle" width="20%">CORREO</th>
+                        <th class="header-tablas align-middle" width="5%">&nbsp;</th>
+                    </tr>
+                </thead>
+                <tbody id="BodyListadoClientes">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<!-- Finaliza Formulario de listado de clientes-->
+<!------------------------------------------------>
+<!-- Inicio Modal Nuevo cliente-->
+<div class="modal fade" id="ModalFormCliente" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-white bg-secondary text-center">
+                <h5 class="modal-title" id="TituloCliente">INFORMACIÓN DE CLIENTE</h5>                
+                <button type="button" onclick="ClientesOper.CerrarModal('ModalFormCliente')" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form name="form_cliente" id="form_cliente">
+                    <input type="hidden" id="IdCliente" name="IdCliente"/>
+                    <div class="form-row">
+                        <div class="form-group col-md-4">
+                            <div class="form-group">
+                                <label for="Nombre1" class="d-inline">NOMBRES</label>
+                                <input class="form-control form-control-sm pl-2" type="text" id="Nombre1" name="Nombre1"/>
+                                <div class="invalid-feedback">Por favor ingrese un nombre.</div>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <div class="form-group">
+                                <label for="Nombre2" class="d-inline">&nbsp;</label>
+                                <input class="form-control form-control-sm pl-2" type="text" id="Nombre2" name="Nombre2"/>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <div class="form-group">&nbsp;</div>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <div class="form-group">
+                                <label for="Apellido1" class="d-inline">APELLIDOS</label>
+                                <input class="form-control form-control-sm pl-2" type="text" id="Apellido1" name="Apellido1"/>
+                                <div class="invalid-feedback">Por favor ingrese un apellido.</div>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <div class="form-group">
+                                <label for="Apellido2" class="d-inline">&nbsp;</label>
+                                <input class="form-control form-control-sm pl-2" type="text" id="Apellido2" name="Apellido2"/>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <div class="form-group">
+                                <label for="Apellido3" class="d-inline">&nbsp;</label>
+                                <input class="form-control form-control-sm pl-2" type="text" id="Apellido3" name="Apellido3"/>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <div class="form-group">
+                                <label for="Nit" class="d-inline">NIT</label>
+                                <input class="form-control form-control-sm pl-2" type="text" id="Nit" name="Nit"/>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <div class="form-group">
+                                <label for="Telefono" class="d-inline">TELEFONO</label>
+                                <input class="form-control form-control-sm pl-2" type="text" maxlength="8" id="Telefono" name="Telefono"/>
+                                <div class="invalid-feedback">El telefono debe tener 8 dígitos.</div>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <div class="form-group">
+                                <label for="Dpi" class="d-inline">DPI</label>
+                                <input class="form-control form-control-sm pl-2" type="text" id="Dpi" name="Dpi"/>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <div class="form-group">
+                                <label for="FechaCreacion" class="d-inline">FECHA CREACION</label>
+                                <input class="form-control form-control-sm pl-2" type="date" id="FechaCreacion" name="FechaCreacion" value="@DateTime.Now.ToString("yyyy-MM-dd")" disabled="disabled" />
+                            </div>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <div class="form-group">
+                                <label for="Genero" class="d-inline">SEXO</label>
+                                <select class="form-control form-control-sm pl-2" id="Genero" name="Genero">
+                                    <option value="">SELECCIONE</option>
+                                    <option value="M">MASCULINO</option>
+                                    <option value="F">FEMENINO</option>
+                                </select>
+                                <div class="invalid-feedback">Por favor seleccione una opción.</div>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <div class="form-group">
+                                <label for="Email" class="d-inline">EMAIL</label>
+                                <input class="form-control form-control-sm pl-2" type="email" id="Email" name="Email"/>
+                                <div class="invalid-feedback">Por favor ingrese un correo electrónico valido.</div>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-12">
+                            <div class="form-group">
+                                <label for="Direccion" class="d-inline">DIRECCION</label>
+                                <input class="form-control form-control-sm pl-2" type="text" id="Direccion" name="Direccion"/>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer justify-content-center" id="FooterModalCliente">
+                <button type="button" id="setFormCliente" class="btn btn-sm text-white" style="background: #44B5A3">
+                    <i class="fa fa-save"></i> GUARDAR
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Finaliza Modal Nuevo cliente-->
+<!------------------------------------------------------------------------->
+<!-- Inicio Modal eliminar-->
+<div class="modal fade" id="ModalEliminar" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-white bg-secondary text-center">
+                <h5 class="modal-title" id="exampleModalLabel">Atencion!</h5>
+                <button type="button" onclick="ClientesOper.CerrarModal('ModalEliminar')" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <h4 class="form-control-sm text-center">¿Esta seguro de eliminar este registro?</h4>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger btn-sm btn-block text-white" id="btnEliminar">
+                    <i class="fa fa-trash"></i> ELIMINAR
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Final modal eliminar -->
+@section scripts{
+    <script type="text/javascript">
+        class OperacionClientes {
+            constructor() {
+
+            }
+
+            CargaFormaNuevo() {
+                // Muestra la modal para registrar un nuevo cliente
+                $('#ModalFormCliente').modal('show');
+                // Se cambia el evento clic del boton 
+                $('#setFormCliente').prop("onclick", "ClientesOper.GuardarClienteNuevo();");
+            }
+
+            CerrarModal(vIdModal) {
+                $('#' + vIdModal).modal('hide');
+            }
+
+            GuardarClienteNuevo() {
+                if ($('#Nombre1').val().length == 0) {
+                    $('#Nombre1').addClass("is-invalid");
+                    return false;
+                }
+
+                if ($('#Apellido1').val().length == 0) {
+                    $('#Apellido1').addClass("is-invalid");
+                    return false;
+                }
+
+                if ($('#Telefono').val().length < 8) {
+                    $('#Telefono').addClass("is-invalid");
+                    return false;
+                }
+
+                if ($('#Genero').val().length == 0) {
+                    $('#Genero').addClass("is-invalid");
+                    return false;
+                }
+
+                $.ajax({
+                    method: 'POST',
+                    url: "/Clientes/GuardarNuevoCliente",
+                    dataType: "json",
+                    data: {
+                        Nombre: $('#NuevoNombre').val(),
+                        Apellido: $('#NuevoApellido').val(),
+                        Telefono: $('#NuevoTelefono').val(),
+                        Nit: $('#NuevoNit').val(),
+                        Sexo: $('#NuevoSexo').val(),
+                        Email: $('#NuevoEmail').val()
+                    }
+                }).then((response) => {
+                    $('#ModalNuevoCliente').modal('hide');
+
+                    if (response > 0) {
+                        alert('Cliente registrador con exito!');
+                    } else {
+                        alert('No se pudo reailzar la operacion solicitada!');
+                    }
+
+                    ClientesList.ActualizaListadoClientes();
+                });
+            }
+
+            //Eliminar cuenta bancaria
+            EliminarCliente(vCodigo) {
+                $('#ModalEliminar').modal('show');
+                
+                $('#btnEliminar').click(() => {
+                    $.ajax({
+                        method: 'POST',
+                        url: "/Clientes/EliminarCliente",
+                        dataType: "json",
+                        data: {
+                            Codigo: vCodigo
+                        }
+                    }).then((response) => {
+                        $('#ModalEliminar').modal('hide');
+
+                        if (response > 0) {
+                            alert('Cliente eliminado con exito!');
+                        } else {
+                            alert('No se pudo reailzar la operacion solicitada');
+                        }
+                        ClientesList.ActualizaListadoClientes();
+                    });
+                });
+            }
+
+            // Funcion que actualiza 
+            ActualizarCliente() {
+                //console.log($('#form_cliente').serializeArray());
+                var Datos = $('#form_cliente').serializeArray();
+                return;
+                $.ajax({
+                    method: 'POST',
+                    url: "/Clientes/EditarCliente",
+                    dataType: "json",
+                    data: {
+                        Datos
+                    }
+                }).then((response) => {
+                    $('#ModalEditar').modal('hide');
+
+                    if (response > 0) {
+                        alert('Cliente actualizado con exito!');
+                    } else {
+                        alert('No se pudo realizar la operacion solicitada');
+                    }
+                    ClientesList.ActualizaListadoClientes();
+                });
+            }
+        }
+
+        class ListadoClientes {
+            constructor(ClientesList) {
+                this.Clientes = ClientesList;
+                this.initEvents();
+            }
+
+            initEvents() {
+                this.ConstruirListadoClientes();
+            }
+
+            // Funcion para generar la tabla para listado de clientes
+            ConstruirListadoClientes() {
+                var rows = "";
+                var contenido = 0;
+
+                this.Clientes.forEach(item => {
+                    contenido = 1;
+
+                    rows += "<tr>" +
+                        "   <td style='display: none;'>" + item.IdCliente + "</td>" +
+                        "   <td>" + item.Nombre1 + " " + item.Nombre2 + ", " + item.Apellido1 + " " + item.Apellido2 + " " + item.Apellido3 +"</td>" +
+                        "   <td>" + item.Telefono + "</td>" +
+                        "   <td>" + item.Nit + "</td>" +
+                        "   <td>" + item.Dpi + "</td>" +
+                        "   <td>" + item.Email + "</td>" +
+                        "   <td class='cuerpo-tabla text-center align-middle'>" +
+                        "       <div class='dropleft'>" +
+                        "           <button class='btn btn-light btn-sm' type='button' id='dropdownMenuButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>" +
+                        "               <i class='fas fa-ellipsis-v'></i>" +
+                        "           </button>" +
+                        "           <div class='dropdown-menu' aria-labelledby='dropdownMenuButton'>" +
+                        "               <a class='dropdown-item' href='#' onclick=ClientesList.VisualizarCliente('" + item.IdCliente + "')>Ver</a>" +
+                        "               <a class='dropdown-item' href='#' onclick=ClientesList.Buscar('" + item.IdCliente + "')>Editar</a>" +
+                        "               <a class='dropdown-item' href='#' onclick=ClientesOper.EliminarCliente('" + item.IdCliente +"')>Borrar</a>" +
+                        "           </div>" +
+                        "       </div>" +
+                        "   </td>" +
+                        "</tr>";
+                });
+
+                if (contenido == 0) {
+                    rows = "<tr><td colspan='6' class='cuerpo-tabla text-center align-middle'>No existen clientes</td></tr>";
+                }
+
+                $("#BodyListadoClientes").html(rows);
+            }
+
+            // Carga el listado general de clientes 
+            ActualizaListadoClientes() {
+                $.ajax({
+                    method: 'GET',
+                    url: "/Clientes/ActualizarListadoClientes",
+                    dataType: "json"
+                }).then((response) => {
+                    this.Clientes = response.ListadoClientes;
+                    this.ConstruirListadoClientes();
+                });
+            }
+
+            // Funcion para realizar busqueda de cliente y mostrar informacion en una modal para ser editada
+            Buscar(vCodigo) {
+                // Buscando el cliente de listado
+                let vRow = this.Clientes.find(x => x.IdCliente == vCodigo);
+
+                // Seteando el titulo de la modal
+                let titulo = $('#TituloCliente');
+                $(titulo).html(titulo.html().split(":")[0] + ' : ' + vRow.IdCliente);
+
+                // Seteando valores a los inputs del formulario
+                $('#IdCliente').val(vRow.IdCliente);
+                $('#Nombre1').val(vRow.Nombre1);
+                $('#Nombre2').val(vRow.Nombre2);
+                $('#Apellido1').val(vRow.Apellido1);
+                $('#Apellido2').val(vRow.Apellido2);
+                $('#Apellido3').val(vRow.Apellido3);
+                $('#Telefono').val(vRow.Telefono);
+                $('#Nit').val(vRow.Nit);
+                $('#Dpi').val(vRow.Dpi);
+                $('#FechaCreacion').val(vRow.FechaCreacion);
+                $('#Genero option[value=' + vRow.Genero + ']').attr('selected', 'selected');
+                $('#Email').val(vRow.Email);
+                $('#Direccion').val(vRow.Direccion);
+                // Se muestra el footer y se cambia el evento clic del boton guardar
+                $('#FooterModalCliente').css("visibility", "visible");
+                // Habilitando los elementos contenidos dentro del formulario de clientes
+                $('#form_cliente').find(':input').prop('disabled', false);
+                // Se deja deshabilitada la fecha de creacion
+                $('#FechaCreacion').prop("disabled", true);                
+                // Mostrando la modal
+                $('#ModalFormCliente').modal('show');
+                // Se cambia el evento clic del boton 
+                $('#setFormCliente').attr("onclick", "ClientesOper.ActualizarCliente();");
+            }
+
+            // Funcion para realizar busqueda de cliente y mostrar informacion en una modal
+            VisualizarCliente(vCodigo) {
+                // Buscando el cliente de listado
+                let vRow = this.Clientes.find(x => x.IdCliente == vCodigo);
+                
+                // Seteando el titulo de la modal
+                let titulo = $('#TituloCliente');
+                $(titulo).html(titulo.html().split(":")[0] + ' : ' + vRow.IdCliente);
+                // Seteando valores a los inputs del formulario
+                $('#Nombre1').val(vRow.Nombre1);
+                $('#Nombre2').val(vRow.Nombre2);
+                $('#Apellido1').val(vRow.Apellido1);
+                $('#Apellido2').val(vRow.Apellido2);
+                $('#Apellido3').val(vRow.Apellido3);
+                $('#Telefono').val(vRow.Telefono);
+                $('#Nit').val(vRow.Nit);
+                $('#Dpi').val(vRow.Dpi);
+                $('#FechaCreacion').val(vRow.FechaCreacion);
+                $('#Genero option[value=' + vRow.Genero + ']').attr('selected', 'selected');
+                $('#Email').val(vRow.Email);
+                $('#Direccion').val(vRow.Direccion);
+                // Deshabilitando los elementos contenidos dentro del formulario de clientes
+                $('#form_cliente').find(':input').prop('disabled', true);
+                // Se oculta el footer porque es solo informativo
+                $('#FooterModalCliente').css("visibility", "hidden");
+                // Mostrando la modal
+                $('#ModalFormCliente').modal('show');
+            }
+        }
+
+        var ClientesOper = new OperacionClientes();
+        var ClientesList = new ListadoClientes(@Html.Raw(JsonConvert.SerializeObject(Model.ListadoClientes)));
+    </script>
+} 
