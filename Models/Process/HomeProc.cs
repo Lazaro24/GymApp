@@ -10,50 +10,59 @@ namespace GymApp.Models.Process
 {
     public class HomeProc
     {
-        Log _log = new Log();
-        GlobalDB db = null;
-        OracleDataReader dr = null;
-
-        private OracleConnection conn { get; set; }
-
+        Log log = new Log();
+        
         public List<HomeEntity> CargarDashboard()
         {
-            db = new GlobalDB();
+            GlobalDB db = new GlobalDB();
             String Query = "";
-            var Homes = new List<HomeEntity>();
 
+            var Homes = new List<HomeEntity>();
             try
             {
-                conn = db.Conectar();
+                Query = "SELECT " +
+                        "   (SELECT count(*) FROM TBL_CONTROL_PAGOS WHERE ID_ESTADO_PAGO = 2), " +
+                        "   (SELECT count(*) FROM TBL_CONTROL_PAGOS WHERE ID_ESTADO_PAGO = 1), " +
+                        "   (SELECT count(*) FROM TBL_CLIENTE)" +                            
+                        "FROM DUAL";
 
-                if(conn != null)
+                log.AddToLog("CargandoDashboard", "Generando listado de operaciones [" + Query + "]");
+                
+                string connectionString = db.getOracleConnectionStr();
+                using (OracleConnection connection = new OracleConnection(connectionString))
                 {
-                    Query = "SELECT " +
-                            "   (SELECT count(*) FROM TBL_CONTROL_PAGOS WHERE ID_ESTADO_PAGO = 2), " +
-                            "   (SELECT count(*) FROM TBL_CONTROL_PAGOS WHERE ID_ESTADO_PAGO = 1), " +
-                            "   (SELECT count(*) FROM TBL_CLIENTE)" +                            
-                            "FROM DUAL";
-                }
-
-                dr = db.DataReader(Query, conn);
-                _log.AddToLog("CargandoDashboard", "Generando listado de operaciones [" + Query + "]");
-                while (dr.Read())
-                {
-                    var home = new HomeEntity
+                    using (OracleCommand command = new OracleCommand(Query, connection))
                     {
-                        Pagos = dr.IsDBNull(0) ? 0 : dr.GetInt32(0),
-                        PagosPendientes = dr.IsDBNull(0) ? 0 : dr.GetInt32(1),
-                        Clientes = dr.IsDBNull(0) ? 0 : dr.GetInt32(2)
-                    };
-                    Homes.Add(home);
+                        try
+                        {
+                            connection.Open();
+
+                            using (OracleDataReader dr = command.ExecuteReader())
+                            {
+                                log.AddToLog("CargarClientes", "Generando listado de clientes [" + Query + "]");
+                                while (dr.Read())
+                                {
+                                    var home = new HomeEntity
+                                    {
+                                        Pagos = dr.IsDBNull(0) ? 0 : dr.GetInt32(0),
+                                        PagosPendientes = dr.IsDBNull(0) ? 0 : dr.GetInt32(1),
+                                        Clientes = dr.IsDBNull(0) ? 0 : dr.GetInt32(2)
+                                    };
+                                    Homes.Add(home);
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            log.AddToLog(ex);
+                        }
+                    }
                 }
-                db.ReaderClose(dr);
-                db.Desconectar(conn);
             }
             catch (Exception ex)
             {
                 Homes = null;
-                _log.AddToLog("CargarClientes", "Error al obtener clientes " + ex.Message + " " + ex.Source + " " + ex.StackTrace);
+                log.AddToLog("CargarClientes", "Error al obtener clientes " + ex.Message + " " + ex.Source + " " + ex.StackTrace);
             }
 
             return Homes;

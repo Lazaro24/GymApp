@@ -3,6 +3,7 @@ using Oracle.ManagedDataAccess.Client;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.Linq;
 using System.Web;
 
@@ -10,95 +11,73 @@ namespace GymApp.Models
 {
     public class GlobalDB
     {
-        Log _log = new Log();
-        public OracleConnection Conn { get; set; }
-        public OracleDataReader Reader { get; set; }
+        Log log = new Log();
+        OracleConnection Conn = null;
+        public String vErrOracle { get; set; }
 
-        public OracleConnection Conectar()
+        public GlobalDB()
         {
+            Conn = new OracleConnection();
+        }
+
+        public String getOracleConnectionStr()
+        {
+            return ConfigurationManager.ConnectionStrings["GYM"].ConnectionString;
+        }
+
+        public int setQuery(String vQuery, GlobalDBParamObjectList vParam)
+        {
+            OracleCommand cmd = null;
+            
+            int Result = 0;
             try
             {
-                if (Conn == null)
+                String vConStr = getOracleConnectionStr();
+
+                if (Conn.State != ConnectionState.Open)
                 {
-                    string ConnectTo = ConfigurationManager.ConnectionStrings["GYM"].ConnectionString;
-                    _log.AddToLog("Conectar", "Abriendo conexion con BD");
-                    Conn = new OracleConnection(ConnectTo);
+                    Conn.ConnectionString = vConStr;
                     Conn.Open();
                 }
-            }
-            catch (Exception e)
-            {
-                Conn = null;
-                _log.AddToLog("Conectar", "Error al conectar " + e.Message + " " + e.Source + " " + e.StackTrace);
-            }
+                cmd = Conn.CreateCommand();
+                cmd.CommandText = vQuery;
 
-            return Conn;
-        }
-
-        public void Desconectar(OracleConnection conn)
-        {
-            try
-            {
-                if (conn != null)
+                if (vParam.Count() > 0)
                 {
-                    conn.Close();
-                    _log.AddToLog("Conectar", "Cerrando conexion con BD ");
+                    for (int iL = 0; iL < vParam.Count(); iL++)
+                    {
+                        cmd.Parameters.Add(vParam.get(iL).Name, vParam.get(iL).Value);
+                        // Si tiene tipo de dato se le agrega
+                        if (vParam.get(iL).DbType.ToString().Length > 0)
+                        {
+                            cmd.Parameters[vParam.get(iL).Name].OracleDbType = vParam.get(iL).DbType;
+                        }
+                        // Si tiene longitud de dato se le agrega
+                        if (vParam.get(iL).Size.HasValue)
+                        {
+                            cmd.Parameters[vParam.get(iL).Name].Size = vParam.get(iL).Size.Value;
+                        }
+                    }
+                }
+
+                Result = cmd.ExecuteNonQuery();
+                log.AddToLog("getQuery.Resultado", "Resultado: " + Result);
+
+                try
+                {
+                    cmd.Dispose();
+                }
+                catch (Exception eF)
+                {
+                    log.AddToLog(eF);
                 }
             }
             catch (Exception e)
             {
-                conn = null;
-                _log.AddToLog("Desconectar", "Error al desconectar " + e.Message + " " + e.Source + " " + e.StackTrace);
-            }
-        }
-
-        public OracleDataReader DataReader(String query, OracleConnection conexion)
-        {
-            try
-            {
-                OracleCommand comando = new OracleCommand(query, Conn);
-                _log.AddToLog("DataReader", "Ejecutando Query " + query + " Conexion ");
-                Reader = comando.ExecuteReader();
-            }
-            catch (Exception e)
-            {
-                Reader = null;
-                _log.AddToLog("DataReader", "Error en DataReader " + e.Message + " " + e.Source + " " + e.StackTrace);
+                log.AddToLog(e);
             }
 
-            return Reader;
-        }
-
-        public void ReaderClose(OracleDataReader dr)
-        {
-            try
-            {
-                _log.AddToLog("ReaderClose", "Cerrando DataReader ");
-                dr.Close();
-            }
-            catch (Exception e)
-            {
-                dr = null;
-                _log.AddToLog("ReaderClose", "Error en ReaderClose " + e.Message + " " + e.Source + " " + e.StackTrace);
-            }
-        }
-
-        public int executeQuery(String Query, OracleConnection conn)
-        {
-            int ResultCommand = 0;
-            try
-            {
-                _log.AddToLog("executeQuery", "Ejecutando query (" + Query + ")");
-                OracleCommand command = new OracleCommand(Query, conn);
-                ResultCommand = command.ExecuteNonQuery();
-                _log.AddToLog("executeQuery", "Query result -> " + ResultCommand);
-            }
-            catch (Exception e)
-            {
-                ResultCommand = -100;
-                _log.AddToLog("executeQuery", "Error en ejecucion " + e.Message + " " + e.Source + " " + e.StackTrace);
-            }
-            return ResultCommand;
+            return Result;
         }
     }
 }

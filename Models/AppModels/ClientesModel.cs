@@ -11,111 +11,95 @@ namespace GymApp.Models.AppModels
     public class ClientesModel
     {
         Log log = new Log();
-        GlobalDB db = null;
-        OracleDataReader dr = null;
+        public String vErrOracle { get; set; }
 
-        private OracleConnection conn { get; set; }
-
-        public List<EntClientes> CargarClientes()
+        public List<EntClientes> ListadoDatos()
         {
-            db = new GlobalDB();
+            GlobalDB db = new GlobalDB();
+
             String Query = "";
             var Clientes = new List<EntClientes>();
 
             try
             {
-                conn = db.Conectar();
+                Query = "SELECT * FROM TBL_CLIENTE ORDER BY 1";
 
-                if (conn != null)
+                string connectionString = db.getOracleConnectionStr();
+                using (OracleConnection connection = new OracleConnection(connectionString))
                 {
-                    Query = "SELECT * FROM TBL_CLIENTE WHERE ESTADO = 'A' ORDER BY 2 ";
-                }
-
-                dr = db.DataReader(Query, conn);
-                log.AddToLog("CargarClientes", "Generando listado de clientes [" + Query + "]");
-                while (dr.Read())
-                {
-                    var Cliente = new EntClientes
+                    using (OracleCommand command = new OracleCommand(Query, connection))
                     {
-                        IdCliente = dr.IsDBNull(0) ? "" : dr.GetString(0),
-                        Nombre1 = dr.IsDBNull(1) ? "" : dr.GetString(1),
-                        Nombre2 = dr.IsDBNull(2) ? "" : dr.GetString(2),
-                        Apellido1 = dr.IsDBNull(3) ? "" : dr.GetString(3),
-                        Apellido2 = dr.IsDBNull(4) ? "" : dr.GetString(4),
-                        Apellido3 = dr.IsDBNull(5) ? "" : dr.GetString(5),
-                        Nit = dr.IsDBNull(6) ? 0 : dr.GetInt32(6),
-                        Telefono = dr.IsDBNull(7) ? 0 : dr.GetInt32(7),
-                        Dpi = dr.IsDBNull(8) ? 0 : dr.GetInt64(8),
-                        FechaCreacion = dr.IsDBNull(9) ? "" : dr.GetDateTime(9).ToString("dd/MM/yyyy"),
-                        Direccion = dr.IsDBNull(10) ? "" : dr.GetString(10),
-                        Genero = dr.IsDBNull(11) ? "" : dr.GetString(11),
-                        Estado = dr.IsDBNull(12) ? "" : dr.GetString(12),
-                        Usuario = dr.IsDBNull(13) ? "" : dr.GetString(13),
-                        Email = dr.IsDBNull(14) ? "" : dr.GetString(14)
-                    };
-                    Clientes.Add(Cliente);
+                        try
+                        {
+                            connection.Open();
+
+                            using(OracleDataReader dr = command.ExecuteReader())
+                            {
+                                log.AddToLog("CargarClientes", "Generando listado de clientes [" + Query + "]");
+                                while (dr.Read())
+                                {
+                                    var Cliente = new EntClientes
+                                    {
+                                        IdCliente = dr.IsDBNull(0) ? "" : dr.GetString(0),
+                                        Nombre1 = dr.IsDBNull(1) ? "" : dr.GetString(1),
+                                        Nombre2 = dr.IsDBNull(2) ? "" : dr.GetString(2),
+                                        Apellido1 = dr.IsDBNull(3) ? "" : dr.GetString(3),
+                                        Apellido2 = dr.IsDBNull(4) ? "" : dr.GetString(4),
+                                        Apellido3 = dr.IsDBNull(5) ? "" : dr.GetString(5),
+                                        Nit = dr.IsDBNull(6) ? 0 : dr.GetInt32(6),
+                                        Telefono = dr.IsDBNull(7) ? 0 : dr.GetInt32(7),
+                                        Dpi = dr.IsDBNull(8) ? 0 : dr.GetInt64(8),
+                                        FechaCreacion = dr.IsDBNull(9) ? "" : dr.GetDateTime(9).ToString("dd/MM/yyyy"),
+                                        Direccion = dr.IsDBNull(10) ? "" : dr.GetString(10),
+                                        Genero = dr.IsDBNull(11) ? "" : dr.GetString(11),
+                                        Estado = dr.IsDBNull(12) ? "" : dr.GetString(12),
+                                        Usuario = dr.IsDBNull(13) ? "" : dr.GetString(13),
+                                        Email = dr.IsDBNull(14) ? "" : dr.GetString(14)
+                                    };
+                                    Clientes.Add(Cliente);
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            log.AddToLog(ex);
+                        }
+                    }
                 }
-                db.ReaderClose(dr);
-                db.Desconectar(conn);
             }
             catch (Exception ex)
             {
-                Clientes = null;
                 log.AddToLog("CargarClientes", "Error al obtener clientes " + ex.Message + " " + ex.Source + " " + ex.StackTrace);
             }
 
             return Clientes;
         }
 
-        public int ActualizarCliente(String Codigo, String Nombre, String Apellido, int Telefono, String Nit, String Sexo, String Email)
+        public int InsertarDatos(EntClientes c)
         {
-            db = new GlobalDB();
-            String Query = "";
+            GlobalDB db = new GlobalDB();
             int vResult = 0;
-
+            String Query = "";
             try
             {
-                conn = db.Conectar();
+                Query = ("INSERT INTO TBL_CLIENTE (ID_CLIENTE, NOMBRE, NOMBRE2, APELLIDO, APELLIDO2, APELLIDO_CASADA, NIT, TELEFONO, DPI, FECHA_CREACION, DIRECCION, ID_GENERO, ESTADO, USUARIO, EMAIL) " +
+                    "VALUES(SEC_ID_CLIENTE, :NOMBRE1, :NOMBRE2, :APELLIDO, :APELLIDO2, :APELLIDO_CASADA, :NIT, :TELEFONO, :DPI, TRUNC(SYSDATE), :DIRECCION, :ID_GENERO, 'A', :USUARIO, :EMAIL)");
 
-                if (conn != null)
-                {
-                    Query = "UPDATE TBL_CLIENTE " +
-                            "SET NOMBRE = '" + Nombre + "', " +
-                            "SET NOMBRE = '" + Nombre + "', " +"   LASTNAME = '" + Apellido + "', " +
-                            "WHERE CLIENT_CODE = " + Codigo + " ";
-                }
+                GlobalDBParamObjectList param = new GlobalDBParamObjectList();
+                param.Add(new GlobalDBParamObject("NOMBRE", c.Nombre1, OracleDbType.Varchar2));
+                param.Add(new GlobalDBParamObject("NOMBRE2", c.Nombre2, OracleDbType.Varchar2));
+                param.Add(new GlobalDBParamObject("APELLIDO", c.Apellido1, OracleDbType.Varchar2));
+                param.Add(new GlobalDBParamObject("APELLIDO2", c.Apellido2, OracleDbType.Varchar2));
+                param.Add(new GlobalDBParamObject("APELLIDO_CASADA", c.Apellido3, OracleDbType.Varchar2));
+                param.Add(new GlobalDBParamObject("NIT", c.Nit, OracleDbType.Int64));
+                param.Add(new GlobalDBParamObject("TELEFONO", c.Telefono, OracleDbType.Int64));
+                param.Add(new GlobalDBParamObject("DPI", c.Dpi, OracleDbType.Int64));
+                param.Add(new GlobalDBParamObject("DIRECCION", c.Direccion, OracleDbType.Varchar2));
+                param.Add(new GlobalDBParamObject("ID_GENERO", c.Genero, OracleDbType.Char));
+                param.Add(new GlobalDBParamObject("USUARIO", c.Usuario, OracleDbType.Varchar2));
+                param.Add(new GlobalDBParamObject("EMAIL", c.Email, OracleDbType.Varchar2));
 
-                vResult = db.executeQuery(Query, conn);
-                db.Desconectar(conn);
-            }
-            catch (Exception e)
-            {
-                vResult = -100;
-                log.AddToLog("ActualizarCliente", "Error al actualizar cliente " + e.Message + " " + e.Source + " " + e.StackTrace);
-            }
-
-            return vResult;
-        }
-
-        public int CrearCliente(String Nombre, String Apellido, String Telefono, String Nit, String Sexo, String Email)
-        {
-            int vResult = 0;
-            db = new GlobalDB();
-            String Query = "";
-
-            try
-            {
-                conn = db.Conectar();
-
-                if (conn != null)
-                {
-                    Query = "INSERT INTO TBL_CLIENT(CLIENT_CODE, NAME, LASTNAME, PHONE_NUMBER, NIT, SEXO, EMAIL, REGISTER_DATE, STATUS) " +
-                            "VALUES((SELECT NVL(MAX(CLIENT_CODE), 0) + 1  FROM TBL_CLIENT), " +
-                            "'" + Nombre + "', '" + Apellido + "', " + Telefono + ", '" + Nit + "', '" + Sexo + "', '" + Email + "', SYSDATE, 'A')";
-                }
-
-                vResult = db.executeQuery(Query, conn);
-                db.Desconectar(conn);
+                vResult = db.setQuery(Query, param);
             }
             catch (Exception e)
             {
@@ -126,30 +110,65 @@ namespace GymApp.Models.AppModels
             return vResult;
         }
 
-        public int EliminarCliente(string CodCliente)
+        public int ActualizarDatos(EntClientes c)
         {
-            db = new GlobalDB();
-            String Query = "";
+            GlobalDB db = new GlobalDB();
             int vResult = 0;
-
+            String Query = "";
             try
             {
-                conn = db.Conectar();
+                Query = ("UPDATE TBL_CLIENTE " +
+                    "SET NOMBRE = :NOMBRE, NOMBRE2 = :NOMBRE2, APELLIDO = :APELLIDO, APELLIDO2 = :APELLIDO2, " +
+                    "APELLIDO_CASADA = :APELLIDO_CASADA, NIT = :NIT, TELEFONO = :TELEFONO, DPI = :DPI, " +
+                    "DIRECCION = :DIRECCION, ID_GENERO = :ID_GENERO, ESTADO = :ESTADO, USUARIO = :USUARIO, EMAIL = :EMAIL " + 
+                    "WHERE ID_CLIENTE = :ID_CLIENTE");
 
-                if (conn != null)
-                {
-                    Query = "UPDATE TBL_CLIENTE " +
-                            "SET ESTADO = 'I' " +
-                            "WHERE ID_CLIENTE = '" + CodCliente + "' ";
-                }
-                log.AddToLog("EliminarCliente", "Eliminando cliente [" + Query + "]");
-                vResult = db.executeQuery(Query, conn);
-                db.Desconectar(conn);
+                GlobalDBParamObjectList param = new GlobalDBParamObjectList();
+                param.Add(new GlobalDBParamObject("NOMBRE", c.Nombre1, OracleDbType.Varchar2));
+                param.Add(new GlobalDBParamObject("NOMBRE2", c.Nombre2, OracleDbType.Varchar2));
+                param.Add(new GlobalDBParamObject("APELLIDO", c.Apellido1, OracleDbType.Varchar2));
+                param.Add(new GlobalDBParamObject("APELLIDO2", c.Apellido2, OracleDbType.Varchar2));
+                param.Add(new GlobalDBParamObject("APELLIDO_CASADA", c.Apellido3, OracleDbType.Varchar2));
+                param.Add(new GlobalDBParamObject("NIT", c.Nit, OracleDbType.Int64));
+                param.Add(new GlobalDBParamObject("TELEFONO", c.Telefono, OracleDbType.Int64));
+                param.Add(new GlobalDBParamObject("DPI", c.Dpi, OracleDbType.Int64));
+                param.Add(new GlobalDBParamObject("DIRECCION", c.Direccion, OracleDbType.Varchar2));
+                param.Add(new GlobalDBParamObject("ID_GENERO", c.Genero, OracleDbType.Char));
+                param.Add(new GlobalDBParamObject("ESTADO", c.Estado, OracleDbType.Char));
+                param.Add(new GlobalDBParamObject("USUARIO", c.Usuario, OracleDbType.Varchar2));
+                param.Add(new GlobalDBParamObject("EMAIL", c.Email, OracleDbType.Varchar2));
+                param.Add(new GlobalDBParamObject("ID_CLIENTE", c.IdCliente, OracleDbType.Varchar2));
+
+                vResult = db.setQuery(Query, param);
             }
             catch (Exception e)
             {
                 vResult = -100;
-                log.AddToLog("EliminarCliente", "Error al eliminar el cliente " + e.Message + " " + e.Source + " " + e.StackTrace);
+                log.AddToLog("CrearCliente", "Ocurrio un error al actualizar informacion del cliente " + e.Message + " " + e.Source + " " + e.StackTrace);
+            }
+
+            return vResult;
+        }
+
+        public int EliminarDatos(string IdCliente, string Estado)
+        {
+            GlobalDB db = new GlobalDB();
+            int vResult = 0;
+            String Query = "";
+            try
+            {
+                Query = ("UPDATE TBL_CLIENTE SET ESTADO = :ESTADO WHERE ID_CLIENTE = :ID_CLIENTE");
+
+                GlobalDBParamObjectList param = new GlobalDBParamObjectList();
+                param.Add(new GlobalDBParamObject("ESTADO", Estado, OracleDbType.Char));
+                param.Add(new GlobalDBParamObject("ID_CLIENTE", IdCliente, OracleDbType.Varchar2));
+
+                vResult = db.setQuery(Query, param);
+            }
+            catch (Exception e)
+            {
+                vResult = -100;
+                log.AddToLog("CrearCliente", "Ocurrio un error al dar de baja al cliente " + e.Message + " " + e.Source + " " + e.StackTrace);
             }
 
             return vResult;

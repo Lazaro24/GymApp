@@ -12,7 +12,7 @@
                     <h4>Clientes</h4>
                 </div>
                 <div class="col-md-auto">
-                    <button type="button" onclick="ClientesOper.CargaFormaNuevo();" class="btn btn-sm btn-success">
+                    <button type="button" onclick="operaciones.CargaFormaNuevo();" class="btn btn-sm btn-success">
                         <i class="fa fa-plus"></i> Nuevo
                     </button>
                 </div>
@@ -21,16 +21,16 @@
     </div>
     <div class="card-body">
         <div class="form-group">
-            <table class="table table-hover table-sm">
+            <table class="table table-hover table-sm pt-2" id="tbDatosClientes">
                 <thead class="bg-secondary text-white">
                     <tr>
-                        <th class="header-tablas align-middle" style="display:none;">CODIGO</th>
-                        <th class="header-tablas align-middle" width="40%">NOMBRE</th>
-                        <th class="header-tablas align-middle" width="10%">TELÉFONO</th>
-                        <th class="header-tablas align-middle" width="10%">NIT</th>
-                        <th class="header-tablas align-middle" width="15%">DPI</th>
-                        <th class="header-tablas align-middle" width="20%">CORREO</th>
-                        <th class="header-tablas align-middle" width="5%">&nbsp;</th>
+                        <th>&nbsp;</th>
+                        <th class="header-tablas align-middle">NOMBRE</th>
+                        <th class="header-tablas align-middle">TELÉFONO</th>
+                        <th class="header-tablas align-middle">NIT</th>
+                        <th class="header-tablas align-middle">DPI</th>
+                        <th class="header-tablas align-middle">CORREO</th>
+                        <th class="header-tablas align-middle">&nbsp;</th>
                     </tr>
                 </thead>
                 <tbody id="BodyListadoClientes">
@@ -42,73 +42,77 @@
 <!-- Finaliza Formulario de listado de clientes-->
 <!------------------------------------------------>
 <!-- Inicio Modal Nuevo cliente-->
-<div class="modal fade" id="ModalFormCliente" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="ModalNuevo" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="modalNuevo" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header text-white bg-secondary text-center">
-                <h5 class="modal-title" id="TituloCliente">INFORMACIÓN DE CLIENTE</h5>                
-                <button type="button" onclick="ClientesOper.CerrarModal('ModalFormCliente')" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <h5 class="modal-title" id="TituloCliente">INFORMACIÓN DE CLIENTE</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form name="form_cliente" id="form_cliente">
-                    <input type="hidden" id="IdCliente" name="IdCliente"/>
-                    <div class="form-row">
+                    <input type="hidden" id="IdCliente" name="IdCliente" />
+                    <div class="row">
                         <div class="form-group col-md-4">
                             <div class="form-group">
                                 <label for="Nombre1" class="d-inline">NOMBRES</label>
-                                <input class="form-control form-control-sm pl-2" type="text" id="Nombre1" name="Nombre1"/>
+                                <input class="form-control form-control-sm pl-2" type="text" id="Nombre1" name="Nombre1" />
                                 <div class="invalid-feedback">Por favor ingrese un nombre.</div>
                             </div>
                         </div>
                         <div class="form-group col-md-4">
                             <div class="form-group">
                                 <label for="Nombre2" class="d-inline">&nbsp;</label>
-                                <input class="form-control form-control-sm pl-2" type="text" id="Nombre2" name="Nombre2"/>
+                                <input class="form-control form-control-sm pl-2" type="text" id="Nombre2" name="Nombre2" />
                             </div>
                         </div>
                         <div class="form-group col-md-4">
                             <div class="form-group">&nbsp;</div>
                         </div>
+                    </div>
+                    <div class="row pt-3">
                         <div class="form-group col-md-4">
                             <div class="form-group">
                                 <label for="Apellido1" class="d-inline">APELLIDOS</label>
-                                <input class="form-control form-control-sm pl-2" type="text" id="Apellido1" name="Apellido1"/>
+                                <input class="form-control form-control-sm pl-2" type="text" id="Apellido1" name="Apellido1" />
                                 <div class="invalid-feedback">Por favor ingrese un apellido.</div>
                             </div>
                         </div>
                         <div class="form-group col-md-4">
                             <div class="form-group">
                                 <label for="Apellido2" class="d-inline">&nbsp;</label>
-                                <input class="form-control form-control-sm pl-2" type="text" id="Apellido2" name="Apellido2"/>
+                                <input class="form-control form-control-sm pl-2" type="text" id="Apellido2" name="Apellido2" />
                             </div>
                         </div>
                         <div class="form-group col-md-4">
                             <div class="form-group">
                                 <label for="Apellido3" class="d-inline">&nbsp;</label>
-                                <input class="form-control form-control-sm pl-2" type="text" id="Apellido3" name="Apellido3"/>
+                                <input class="form-control form-control-sm pl-2" type="text" id="Apellido3" name="Apellido3" />
                             </div>
                         </div>
+                    </div>
+                    <div class="row pt-3">
                         <div class="form-group col-md-4">
                             <div class="form-group">
                                 <label for="Nit" class="d-inline">NIT</label>
-                                <input class="form-control form-control-sm pl-2" type="text" id="Nit" name="Nit"/>
+                                <input class="form-control form-control-sm pl-2" type="text" id="Nit" name="Nit" />
                             </div>
                         </div>
                         <div class="form-group col-md-4">
                             <div class="form-group">
                                 <label for="Telefono" class="d-inline">TELEFONO</label>
-                                <input class="form-control form-control-sm pl-2" type="text" maxlength="8" id="Telefono" name="Telefono"/>
+                                <input class="form-control form-control-sm pl-2" type="text" maxlength="8" id="Telefono" name="Telefono" />
                                 <div class="invalid-feedback">El telefono debe tener 8 dígitos.</div>
                             </div>
                         </div>
                         <div class="form-group col-md-4">
                             <div class="form-group">
                                 <label for="Dpi" class="d-inline">DPI</label>
-                                <input class="form-control form-control-sm pl-2" type="text" id="Dpi" name="Dpi"/>
+                                <input class="form-control form-control-sm pl-2" type="text" id="Dpi" name="Dpi" />
                             </div>
                         </div>
+                    </div>
+                    <div class="row pt-3">
                         <div class="form-group col-md-3">
                             <div class="form-group">
                                 <label for="FechaCreacion" class="d-inline">FECHA CREACION</label>
@@ -118,7 +122,7 @@
                         <div class="form-group col-md-3">
                             <div class="form-group">
                                 <label for="Genero" class="d-inline">SEXO</label>
-                                <select class="form-control form-control-sm pl-2" id="Genero" name="Genero">
+                                <select class="form-control form-control-sm pl-2" id="selectGenero" name="selectGenero">
                                     <option value="">SELECCIONE</option>
                                     <option value="M">MASCULINO</option>
                                     <option value="F">FEMENINO</option>
@@ -129,21 +133,31 @@
                         <div class="form-group col-md-6">
                             <div class="form-group">
                                 <label for="Email" class="d-inline">EMAIL</label>
-                                <input class="form-control form-control-sm pl-2" type="email" id="Email" name="Email"/>
+                                <input class="form-control form-control-sm pl-2" type="email" id="Email" name="Email" />
                                 <div class="invalid-feedback">Por favor ingrese un correo electrónico valido.</div>
                             </div>
                         </div>
+                    </div>
+                    <div class="row pt-3">
                         <div class="form-group col-md-12">
                             <div class="form-group">
                                 <label for="Direccion" class="d-inline">DIRECCION</label>
-                                <input class="form-control form-control-sm pl-2" type="text" id="Direccion" name="Direccion"/>
+                                <input class="form-control form-control-sm pl-2" type="text" id="Direccion" name="Direccion" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" id="divEstado">
+                        <div class="form-floating col-md-3">
+                            <div class="form-check pt-2">
+                                <input class="form-check-input" type="checkbox" value="" id="cbestado" name="estado" checked>
+                                <label class="form-check-label" for="cbestado">ACTIVO</label>
                             </div>
                         </div>
                     </div>
                 </form>
             </div>
-            <div class="modal-footer justify-content-center" id="FooterModalCliente">
-                <button type="button" id="setFormCliente" class="btn btn-sm text-white" style="background: #44B5A3">
+            <div class="modal-footer justify-content-center" id="FooterModal">
+                <button type="button" id="setForm" class="btn btn-sm text-white" style="background: #44B5A3">
                     <i class="fa fa-save"></i> GUARDAR
                 </button>
             </div>
@@ -158,9 +172,7 @@
         <div class="modal-content">
             <div class="modal-header text-white bg-secondary text-center">
                 <h5 class="modal-title" id="exampleModalLabel">Atencion!</h5>
-                <button type="button" onclick="ClientesOper.CerrarModal('ModalEliminar')" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <h4 class="form-control-sm text-center">¿Esta seguro de eliminar este registro?</h4>
@@ -176,79 +188,150 @@
 <!-- Final modal eliminar -->
 @section scripts{
     <script type="text/javascript">
-        class OperacionClientes {
+        $(document).ready(function () {
+            // Configura DataTable
+            $('#tbDatosClientes').DataTable({
+                "paging": true,    // Habilita la paginación
+                "searching": true,   // Habilita la búsqueda
+                "language": {
+                    "sProcessing": "Procesando...",
+                    "sLengthMenu": "Mostrar _MENU_ registros",
+                    "sZeroRecords": "No se encontraron resultados",
+                    "sEmptyTable": "Ningún dato disponible en esta tabla",
+                    "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+                    "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+                    "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
+                    "sInfoPostFix": "",
+                    "sSearch": "Buscar:",
+                    "sUrl": "",
+                    "sInfoThousands": ",",
+                    "sLoadingRecords": "Cargando...",
+                    "oPaginate": {
+                        "sFirst": "Primero",
+                        "sLast": "Último",
+                        "sNext": "Siguiente",
+                        "sPrevious": "Anterior"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                        "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                    }
+                },
+
+            });
+        });
+
+        class OperacionesDatos {
             constructor() {
 
             }
 
+            limpiarFormulario() {
+                // Seteando valores a los inputs del formulario
+                $('#IdCliente').val("");
+                $('#Nombre1').val("");
+                $('#Nombre2').val("");
+                $('#Apellido1').val("");
+                $('#Apellido2').val("");
+                $('#Apellido3').val("");
+                $('#Telefono').val("");
+                $('#Nit').val("");
+                $('#Dpi').val("");
+                $('#FechaCreacion').val("");
+                $('#Genero option[value=""]').attr('selected', 'selected');
+                $('#Email').val("");
+                $('#Direccion').val("");
+            }
+
             CargaFormaNuevo() {
+                this.limpiarFormulario();
+                $('#form_cliente').find(':input').prop('disabled', false);
+                $("#FechaCreacion").val("@DateTime.Now.ToString("yyyy-MM-dd")");
+                $("#cbestado").prop("checked", true);
+                $("#cbestado").prop("disabled", "disabled");
+
                 // Muestra la modal para registrar un nuevo cliente
-                $('#ModalFormCliente').modal('show');
-                // Se cambia el evento clic del boton 
-                $('#setFormCliente').prop("onclick", "ClientesOper.GuardarClienteNuevo();");
+                $('#ModalNuevo').modal('show');
+                // Se cambia el evento clic del boton
+                $('#setForm').attr("onclick", "operaciones.GuardarNuevo();");
             }
 
-            CerrarModal(vIdModal) {
-                $('#' + vIdModal).modal('hide');
+            aFecha(vfecha, sepadador, salida) {
+                var val = vfecha.split(sepadador);
+                return val[2] + salida + val[1] + salida + val[0];
             }
 
-            GuardarClienteNuevo() {
+            GuardarNuevo() {
                 if ($('#Nombre1').val().length == 0) {
                     $('#Nombre1').addClass("is-invalid");
                     return false;
+                } else {
+                    $('#Nombre1').removeClass("is-invalid");
                 }
 
                 if ($('#Apellido1').val().length == 0) {
                     $('#Apellido1').addClass("is-invalid");
                     return false;
+                } else {
+                    $('#Apellido1').removeClass("is-invalid");
                 }
 
-                if ($('#Telefono').val().length < 8) {
-                    $('#Telefono').addClass("is-invalid");
+                if ($("#Telefono").val().length == 0) {
+                    $("#Telefono").addClass("is-invalid");
                     return false;
+                } else {
+                    $("#Telefono").removeClass("is-invalid");
                 }
 
-                if ($('#Genero').val().length == 0) {
-                    $('#Genero').addClass("is-invalid");
+                if ($("#selectGenero").val().length == 0) {
+                    $("#selectGenero").addClass("is-invalid");
                     return false;
+                } else {
+                    $("#selectGenero").removeClass("is-invalid");
                 }
 
                 $.ajax({
                     method: 'POST',
-                    url: "/Clientes/GuardarNuevoCliente",
+                    url: "/Clientes/Nuevo",
                     dataType: "json",
                     data: {
-                        Nombre: $('#NuevoNombre').val(),
-                        Apellido: $('#NuevoApellido').val(),
-                        Telefono: $('#NuevoTelefono').val(),
-                        Nit: $('#NuevoNit').val(),
-                        Sexo: $('#NuevoSexo').val(),
-                        Email: $('#NuevoEmail').val()
+                        IdCliente: "",
+                        Nombre1: $("#Nombre1").val(),
+                        Nombre2: $("#Nombre2").val(),
+                        Apellido1: $("#Apellido1").val(),
+                        Apellido2: $("#Apellido2").val(),
+                        Apellido3: $("#Apellido3").val(),
+                        Nit: $("#Nit").val(),
+                        Telefono: $("#Telefono").val(),
+                        Dpi: $("#Dpi").val(),
+                        Genero: $("#selectGenero").val(),
+                        Email: $("#Email").val(),
+                        Direccion: $("#Direccion").val()
                     }
                 }).then((response) => {
-                    $('#ModalNuevoCliente').modal('hide');
-
+                    $('#ModalNuevo').modal('hide');
                     if (response > 0) {
                         alert('Cliente registrador con exito!');
                     } else {
                         alert('No se pudo reailzar la operacion solicitada!');
                     }
 
-                    ClientesList.ActualizaListadoClientes();
+                    listado.ActualizarListado();
                 });
             }
 
             //Eliminar cuenta bancaria
-            EliminarCliente(vCodigo) {
+            Eliminar(vCodigo) {
                 $('#ModalEliminar').modal('show');
-                
+
                 $('#btnEliminar').click(() => {
                     $.ajax({
                         method: 'POST',
-                        url: "/Clientes/EliminarCliente",
+                        url: "/Clientes/Eliminar",
                         dataType: "json",
                         data: {
-                            Codigo: vCodigo
+                            IdCliente: vCodigo,
+                            estado: "I"
                         }
                     }).then((response) => {
                         $('#ModalEliminar').modal('hide');
@@ -258,71 +341,117 @@
                         } else {
                             alert('No se pudo reailzar la operacion solicitada');
                         }
-                        ClientesList.ActualizaListadoClientes();
+                        listado.ActualizarListado();
                     });
                 });
             }
 
-            // Funcion que actualiza 
-            ActualizarCliente() {
-                //console.log($('#form_cliente').serializeArray());
-                var Datos = $('#form_cliente').serializeArray();
-                return;
+            // Funcion que actualiza
+            EditarDatos() {
+                if ($('#Nombre1').val().length == 0) {
+                    $('#Nombre1').addClass("is-invalid");
+                    return false;
+                } else {
+                    $('#Nombre1').removeClass("is-invalid");
+                }
+
+                if ($('#Apellido1').val().length == 0) {
+                    $('#Apellido1').addClass("is-invalid");
+                    return false;
+                } else {
+                    $('#Apellido1').removeClass("is-invalid");
+                }
+
+                if ($("#Telefono").val().length == 0) {
+                    $("#Telefono").addClass("is-invalid");
+                    return false;
+                } else {
+                    $("#Telefono").removeClass("is-invalid");
+                }
+
+                if ($("#selectGenero").val().length == 0) {
+                    $("#selectGenero").addClass("is-invalid");
+                    return false;
+                } else {
+                    $("#selectGenero").removeClass("is-invalid");
+                }
+
+                var vestado = ($("#cbestado").prop("checked")) ? "A" : "I";
+
                 $.ajax({
                     method: 'POST',
-                    url: "/Clientes/EditarCliente",
+                    url: "/Clientes/Editar",
                     dataType: "json",
                     data: {
-                        Datos
+                        IdCliente: $("#IdCliente").val(),
+                        Nombre1: $("#Nombre1").val(),
+                        Nombre2: $("#Nombre2").val(),
+                        Apellido1: $("#Apellido1").val(),
+                        Apellido2: $("#Apellido2").val(),
+                        Apellido3: $("#Apellido3").val(),
+                        Nit: $("#Nit").val(),
+                        Telefono: $("#Telefono").val(),
+                        Dpi: $("#Dpi").val(),
+                        Genero: $("#selectGenero").val(),
+                        Email: $("#Email").val(),
+                        Direccion: $("#Direccion").val(),
+                        Estado: vestado
                     }
                 }).then((response) => {
-                    $('#ModalEditar').modal('hide');
+                    $('#ModalNuevo').modal('hide');
 
                     if (response > 0) {
                         alert('Cliente actualizado con exito!');
                     } else {
                         alert('No se pudo realizar la operacion solicitada');
                     }
-                    ClientesList.ActualizaListadoClientes();
+                    listado.ActualizarListado();
                 });
             }
         }
 
-        class ListadoClientes {
+        class ListadoDatos {
             constructor(ClientesList) {
                 this.Clientes = ClientesList;
                 this.initEvents();
             }
 
             initEvents() {
-                this.ConstruirListadoClientes();
+                this.ConstruirListado();
             }
 
             // Funcion para generar la tabla para listado de clientes
-            ConstruirListadoClientes() {
+            ConstruirListado() {
                 var rows = "";
                 var contenido = 0;
 
                 this.Clientes.forEach(item => {
                     contenido = 1;
+                    console.log(item);
+                    var estado = (item.Estado == "A") ? '<i class="fa-solid fa-user-check" style="color: #00753D;"></i>' : '<i class="fa-solid fa-user-xmark" style="color: #DB1F26;"></i>';
+                    var opciones = "";
+
+                    if (item.Estado == "A") {
+                        opciones = "" +
+                            "<a class='dropdown-item' href='#' onclick=listado.Buscar('" + item.IdCliente + "')>Editar</a>" +
+                            "<a class='dropdown-item' href='#' onclick=operaciones.Eliminar('" + item.IdCliente + "')>Borrar</a>";
+                    } else {
+                        opciones = "<a class='dropdown-item' href='#' onclick=listado.VisualizarCliente('" + item.IdCliente + "')>Ver</a>";
+                    }
 
                     rows += "<tr>" +
-                        "   <td style='display: none;'>" + item.IdCliente + "</td>" +
+                        "   <td>" + estado + "</td>" +
                         "   <td>" + item.Nombre1 + " " + item.Nombre2 + ", " + item.Apellido1 + " " + item.Apellido2 + " " + item.Apellido3 +"</td>" +
                         "   <td>" + item.Telefono + "</td>" +
                         "   <td>" + item.Nit + "</td>" +
                         "   <td>" + item.Dpi + "</td>" +
                         "   <td>" + item.Email + "</td>" +
                         "   <td class='cuerpo-tabla text-center align-middle'>" +
-                        "       <div class='dropleft'>" +
-                        "           <button class='btn btn-light btn-sm' type='button' id='dropdownMenuButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>" +
+                        "       <div class='btn-group dropleft'>" +
+                        "           <button class='btn btn-light btn-sm' type='button' id='dropdownMenuButton' data-bs-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>" +
                         "               <i class='fas fa-ellipsis-v'></i>" +
                         "           </button>" +
-                        "           <div class='dropdown-menu' aria-labelledby='dropdownMenuButton'>" +
-                        "               <a class='dropdown-item' href='#' onclick=ClientesList.VisualizarCliente('" + item.IdCliente + "')>Ver</a>" +
-                        "               <a class='dropdown-item' href='#' onclick=ClientesList.Buscar('" + item.IdCliente + "')>Editar</a>" +
-                        "               <a class='dropdown-item' href='#' onclick=ClientesOper.EliminarCliente('" + item.IdCliente +"')>Borrar</a>" +
-                        "           </div>" +
+                        "           <div class='dropdown-menu' aria-labelledby='dropdownMenuButton'>" + opciones + "</div>" +
                         "       </div>" +
                         "   </td>" +
                         "</tr>";
@@ -335,27 +464,24 @@
                 $("#BodyListadoClientes").html(rows);
             }
 
-            // Carga el listado general de clientes 
-            ActualizaListadoClientes() {
+            // Carga el listado general de clientes
+            ActualizarListado() {
                 $.ajax({
                     method: 'GET',
-                    url: "/Clientes/ActualizarListadoClientes",
+                    url: "/Clientes/Listado",
                     dataType: "json"
                 }).then((response) => {
                     this.Clientes = response.ListadoClientes;
-                    this.ConstruirListadoClientes();
+                    this.ConstruirListado();
                 });
             }
 
             // Funcion para realizar busqueda de cliente y mostrar informacion en una modal para ser editada
             Buscar(vCodigo) {
+                operaciones.limpiarFormulario();
                 // Buscando el cliente de listado
                 let vRow = this.Clientes.find(x => x.IdCliente == vCodigo);
-
-                // Seteando el titulo de la modal
-                let titulo = $('#TituloCliente');
-                $(titulo).html(titulo.html().split(":")[0] + ' : ' + vRow.IdCliente);
-
+                
                 // Seteando valores a los inputs del formulario
                 $('#IdCliente').val(vRow.IdCliente);
                 $('#Nombre1').val(vRow.Nombre1);
@@ -366,27 +492,29 @@
                 $('#Telefono').val(vRow.Telefono);
                 $('#Nit').val(vRow.Nit);
                 $('#Dpi').val(vRow.Dpi);
-                $('#FechaCreacion').val(vRow.FechaCreacion);
-                $('#Genero option[value=' + vRow.Genero + ']').attr('selected', 'selected');
+                $('#FechaCreacion').val(operaciones.aFecha(vRow.FechaCreacion, "/", "-"));
+                $('#selectGenero option[value=' + vRow.Genero + ']').attr('selected', 'selected');
                 $('#Email').val(vRow.Email);
                 $('#Direccion').val(vRow.Direccion);
+                $("#cbestado").prop("checked", (vRow.Estado == "A"));
                 // Se muestra el footer y se cambia el evento clic del boton guardar
-                $('#FooterModalCliente').css("visibility", "visible");
+                $('#FooterModal').css("visibility", "visible");
                 // Habilitando los elementos contenidos dentro del formulario de clientes
                 $('#form_cliente').find(':input').prop('disabled', false);
                 // Se deja deshabilitada la fecha de creacion
-                $('#FechaCreacion').prop("disabled", true);                
+                $('#FechaCreacion').prop("disabled", true);
                 // Mostrando la modal
-                $('#ModalFormCliente').modal('show');
-                // Se cambia el evento clic del boton 
-                $('#setFormCliente').attr("onclick", "ClientesOper.ActualizarCliente();");
+                $('#ModalNuevo').modal('show');
+                // Se cambia el evento clic del boton
+                $('#setForm').attr("onclick", "operaciones.EditarDatos();");
             }
 
             // Funcion para realizar busqueda de cliente y mostrar informacion en una modal
             VisualizarCliente(vCodigo) {
+                operaciones.limpiarFormulario();
                 // Buscando el cliente de listado
                 let vRow = this.Clientes.find(x => x.IdCliente == vCodigo);
-                
+
                 // Seteando el titulo de la modal
                 let titulo = $('#TituloCliente');
                 $(titulo).html(titulo.html().split(":")[0] + ' : ' + vRow.IdCliente);
@@ -399,20 +527,21 @@
                 $('#Telefono').val(vRow.Telefono);
                 $('#Nit').val(vRow.Nit);
                 $('#Dpi').val(vRow.Dpi);
-                $('#FechaCreacion').val(vRow.FechaCreacion);
-                $('#Genero option[value=' + vRow.Genero + ']').attr('selected', 'selected');
+                $('#FechaCreacion').val(operaciones.aFecha(vRow.FechaCreacion, "/", "-"));
+                $('#selectGenero option[value=' + vRow.Genero + ']').attr('selected', 'selected');
                 $('#Email').val(vRow.Email);
                 $('#Direccion').val(vRow.Direccion);
+                $("#cbestado").prop("checked", (vRow.Estado == "A"));
                 // Deshabilitando los elementos contenidos dentro del formulario de clientes
                 $('#form_cliente').find(':input').prop('disabled', true);
                 // Se oculta el footer porque es solo informativo
-                $('#FooterModalCliente').css("visibility", "hidden");
+                $('#FooterModal').css("visibility", "hidden");
                 // Mostrando la modal
-                $('#ModalFormCliente').modal('show');
+                $('#ModalNuevo').modal('show');
             }
         }
 
-        var ClientesOper = new OperacionClientes();
-        var ClientesList = new ListadoClientes(@Html.Raw(JsonConvert.SerializeObject(Model.ListadoClientes)));
+        var operaciones = new OperacionesDatos();
+        var listado = new ListadoDatos(@Html.Raw(JsonConvert.SerializeObject(Model.ListadoClientes)));
     </script>
 } 

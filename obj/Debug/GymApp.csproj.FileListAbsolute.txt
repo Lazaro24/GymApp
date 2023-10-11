@@ -33,6 +33,7 @@ D:\Proyectos sistemas\GYM-BRO\GymApp\bin\roslyn\vbc.rsp
 D:\Proyectos sistemas\GYM-BRO\GymApp\bin\roslyn\VBCSCompiler.exe
 D:\Proyectos sistemas\GYM-BRO\GymApp\bin\roslyn\VBCSCompiler.exe.config
 D:\Proyectos sistemas\GYM-BRO\GymApp\bin\Antlr3.Runtime.dll
+D:\Proyectos sistemas\GYM-BRO\GymApp\bin\BCrypt.Net-Next.dll
 D:\Proyectos sistemas\GYM-BRO\GymApp\bin\BouncyCastle.Cryptography.dll
 D:\Proyectos sistemas\GYM-BRO\GymApp\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll
 D:\Proyectos sistemas\GYM-BRO\GymApp\bin\Microsoft.Web.Infrastructure.dll
@@ -51,6 +52,7 @@ D:\Proyectos sistemas\GYM-BRO\GymApp\bin\System.Web.WebPages.Deployment.dll
 D:\Proyectos sistemas\GYM-BRO\GymApp\bin\System.Web.WebPages.dll
 D:\Proyectos sistemas\GYM-BRO\GymApp\bin\System.Web.WebPages.Razor.dll
 D:\Proyectos sistemas\GYM-BRO\GymApp\bin\WebGrease.dll
+D:\Proyectos sistemas\GYM-BRO\GymApp\bin\BCrypt.Net-Next.xml
 D:\Proyectos sistemas\GYM-BRO\GymApp\bin\BouncyCastle.Cryptography.xml
 D:\Proyectos sistemas\GYM-BRO\GymApp\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
 D:\Proyectos sistemas\GYM-BRO\GymApp\bin\MimeKit.pdb
