@@ -59,7 +59,7 @@ namespace GymApp.Models
                         }
                     }
                 }
-
+                log.AddToLog(cmd, "GYM", "0");
                 Result = cmd.ExecuteNonQuery();
                 log.AddToLog("getQuery.Resultado", "Resultado: " + Result);
 

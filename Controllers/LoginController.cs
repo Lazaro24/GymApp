@@ -1,4 +1,5 @@
-﻿using GymApp.Models.AppModels;
+﻿using GymApp.Models;
+using GymApp.Models.AppModels;
 using GymApp.Models.Entities;
 using System;
 using System.Collections.Generic;
@@ -39,7 +40,6 @@ namespace GymApp.Controllers
                 }
 
                 Session["Usuario"] = datosLogin.usuario;
-                Session["Nombre"] = datosLogin.nombres;
 
                 return RedirectToAction("Index", "Home");
             }

@@ -7,7 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Web;
 
-namespace GymApp.Controllers
+namespace GymApp.Models
 {
     public class Log
     {

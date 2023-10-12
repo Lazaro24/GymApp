@@ -137,8 +137,12 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\ClientesController.cs" />
+    <Compile Include="Controllers\EmpleadosController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\UsuariosController.cs" />
+    <Compile Include="Models\AppModels\EmpleadosModel.cs" />
     <Compile Include="Models\AppModels\UsuarioModel.cs" />
+    <Compile Include="Models\Entities\entEmpleados.cs" />
     <Compile Include="Models\GlobalDBParamObject.cs" />
     <Compile Include="Models\GlobalDBParamObjectList.cs" />
     <Compile Include="Models\Log.cs" />
@@ -295,6 +299,8 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Clientes\Index.cshtml" />
     <Content Include="Views\Login\Ingreso.cshtml" />
+    <Content Include="Views\Empleados\Index.cshtml" />
+    <Content Include="Views\Usuarios\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

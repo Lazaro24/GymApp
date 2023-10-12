@@ -1,0 +1,513 @@
+﻿@using Newtonsoft.Json
+@model GymApp.Models.Entities.GetUsuarios
+@{
+    ViewBag.Title = "GYM";
+}
+<!-- Inicio Formulario de listado de empleados -->
+<div class="card" style="max-width: 100%;">
+    <div class="card-header">
+        <div class="container">
+            <div class="row">
+                <div class="col align-content-lg-center">
+                    <h4>Listado de usuarios</h4>
+                </div>
+                <div class="col-md-auto">
+                    <button type="button" onclick="operaciones.CargaFormaNuevo();" class="btn btn-sm btn-success">
+                        <i class="fa fa-plus"></i> Nuevo
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="form-group">
+            <table class="table table-hover table-sm pt-2" id="tbDatos">
+                <thead class="bg-secondary text-white">
+                    <tr>
+                        <th>&nbsp;</th>
+                        <th class="header-tablas align-middle">DPI</th>
+                        <th class="header-tablas align-middle">NOMBRE EMPLEADO</th>
+                        <th class="header-tablas align-middle">USUARIO</th>
+                        <th class="header-tablas align-middle">CREACIÓN</th>
+                        <th class="header-tablas align-middle">&nbsp;</th>
+                    </tr>
+                </thead>
+                <tbody id="BodyListado">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<!-- Finaliza Formulario de listado de Empleados-->
+<!------------------------------------------------>
+<!-- Inicio Modal Nuevo Empleados-->
+<div class="modal fade" id="ModalNuevo" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="modalNuevo" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-white bg-secondary text-center">
+                <h5 class="modal-title">INFORMACIÓN DE USUARIO</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form name="datos_form" id="datos_form" autocomplete="off">
+                    <div class="row">
+                        <span class="badge rounded-pill bg-success d-block" id="spanStatus"></span>
+                    </div>
+                    <div class="row pt-3">
+                        <div class="form-group col-md-4">
+                            <div class="form-group">
+                                <label for="usuario" class="d-inline">USUARIO</label>
+                                <input class="form-control form-control-sm pl-2" type="text" id="usuario" name="usuario" />
+                                <div class="invalid-feedback">Por favor ingrese un nombre de usuario</div>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <div class="form-group">
+                                <label for="password" class="d-inline">PASSWORD</label>
+                                <input class="form-control form-control-sm pl-2" type="password" id="password" name="password" />
+                                <div class="invalid-feedback">Por favor ingrese el password</div>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <div class="form-group">
+                                <label for="password_valid" class="d-inline">CONFIRME PASSWORD</label>
+                                <input class="form-control form-control-sm pl-2" type="password" id="password_valid" name="password_valid" />
+                                <div class="invalid-feedback">Por favor ingrese la confirmación del password</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row pt-3">
+                        <div class="form-group col-md-12">
+                            <div class="form-group">
+                                <label for="id_empleado" class="form-label">EMPLEADO</label>
+                                <select class="js-example-placeholder-single js-states js-example-responsive js-example-theme-multiple form-control" id="id_empleado" name="id_empleado" style="width: 100%;">
+                                </select>
+                                <div class="invalid-feedback">Por favor asigne un empleado al usuario.</div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer justify-content-center" id="FooterModal">
+                <button type="button" id="setForm" class="btn btn-sm text-white" style="background: #44B5A3">
+                    <i class="fa fa-save"></i> GUARDAR
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Finaliza Modal Nuevo Empleados-->
+<!------------------------------------------------------------------------->
+<!-- Inicio Modal eliminar-->
+<div class="modal fade" id="ModalEliminar" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-white bg-secondary text-center">
+                <h5 class="modal-title" id="exampleModalLabel">Atencion!</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h4 class="form-control-sm text-center">¿Esta seguro de eliminar este registro?</h4>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger btn-sm btn-block text-white" id="btnEliminar">
+                    <i class="fa fa-trash"></i> ELIMINAR
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Final modal eliminar -->
+@section scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#id_empleado').select2({
+                dropdownParent: $('#ModalNuevo')
+            });
+
+            $("#usuario").on("input", function () {
+                // Obtén el valor actual del input
+                var valorInput = $(this).val();
+
+                // Reemplaza los espacios en blanco con nada (elimina los espacios)
+                var valorSinEspacios = valorInput.replace(/\s/g, '');
+
+                // Si el valor cambió debido a la eliminación de espacios, actualiza el valor del input
+                if (valorInput !== valorSinEspacios) {
+                    $(this).val(valorSinEspacios);
+                }
+            });
+
+            // Configura DataTable
+            $('#tbDatos').DataTable({
+                "paging": true,    // Habilita la paginación
+                "searching": true,   // Habilita la búsqueda
+                "language": {
+                    "sProcessing": "Procesando...",
+                    "sLengthMenu": "Mostrar _MENU_ registros",
+                    "sZeroRecords": "No se encontraron resultados",
+                    "sEmptyTable": "Ningún dato disponible en esta tabla",
+                    "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+                    "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+                    "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
+                    "sInfoPostFix": "",
+                    "sSearch": "Buscar:",
+                    "sUrl": "",
+                    "sInfoThousands": ",",
+                    "sLoadingRecords": "Cargando...",
+                    "oPaginate": {
+                        "sFirst": "Primero",
+                        "sLast": "Último",
+                        "sNext": "Siguiente",
+                        "sPrevious": "Anterior"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                        "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                    }
+                },
+
+            });
+        });
+
+        class OperacionesDatos {
+            constructor() {
+
+            }
+
+            limpiarFormulario() {
+                // Seteando valores a los inputs del formulario
+                $('#usuario').val("");
+                $('#password').val("");
+                $('#password_valid').val("");               
+                $('#id_empleado option[value=""]').attr('selected', 'selected');
+            }
+
+            CargaFormaNuevo() {
+                this.limpiarFormulario();
+                listado.selectEmpleados();
+                $('#datos_form').find(':input').prop('disabled', false);
+                $("#spanStatus").css("visibility", "hidden");
+
+                // Muestra la modal para registrar un nuevo empleado
+                $('#ModalNuevo').modal('show');
+                // Se cambia el evento clic del boton
+                $('#setForm').attr("onclick", "operaciones.GuardarNuevo();");
+            }
+
+            aFecha(vfecha, sepadador, salida) {
+                var val = vfecha.split(sepadador);
+                return val[2] + salida + val[1] + salida + val[0];
+            }
+
+            GuardarNuevo() {
+                if ($('#usuario').val().length == 0) {
+                    $('#usuario').addClass("is-invalid");
+                    return false;
+                } else {
+                    $('#usuario').removeClass("is-invalid");
+                }
+
+                if ($('#password').val().length == 0) {
+                    $('#password').addClass("is-invalid");
+                    return false;
+                } else {
+                    $('#password').removeClass("is-invalid");
+                }
+
+                if ($("#password_valid").val().length == 0) {
+                    $("#password_valid").addClass("is-invalid");
+                    return false;
+                } else {
+                    $("#password_valid").removeClass("is-invalid");
+                }
+
+                if ($("#password").val() != $("#password_valid").val()) {
+                    alert("El password y la confirmación no coinciden");
+                    return false;
+                }
+
+                if ($("#id_empleado").val().length == 0) {
+                    $("#id_empleado").addClass("is-invalid");
+                    return false;
+                } else {
+                    $("#id_empleado").removeClass("is-invalid");
+                }
+
+                $.ajax({
+                    method: 'POST',
+                    url: "/Usuarios/Nuevo",
+                    dataType: "json",
+                    data: {
+                        usuario: $("#usuario").val(),
+                        password: $("#password").val(),
+                        id_empleado: $("#id_empleado").val()
+                    }
+                }).then((response) => {
+                    $('#ModalNuevo').modal('hide');
+                    if (response > 0) {
+                        alert('Usuario registrador con exito!');
+                    } else {
+                        alert('No se pudo reailzar la operacion solicitada!');
+                    }
+
+                    listado.ActualizarListado();
+                });
+            }
+
+            //Eliminar cuenta bancaria
+            Eliminar(vCodigo) {
+                $('#ModalEliminar').modal('show');
+
+                $('#btnEliminar').click(() => {
+                    $.ajax({
+                        method: 'POST',
+                        url: "/Usuarios/Eliminar",
+                        dataType: "json",
+                        data: {
+                            usuario: vCodigo
+                        }
+                    }).then((response) => {
+                        $('#ModalEliminar').modal('hide');
+
+                        if (response > 0) {
+                            alert('Usuario eliminado con exito!');
+                        } else {
+                            alert('No se pudo reailzar la operacion solicitada');
+                        }
+                        listado.ActualizarListado();
+                    });
+                });
+            }
+
+            // Funcion que actualiza
+            EditarDatos() {
+                if ($('#password').val().length == 0) {
+                    $('#password').addClass("is-invalid");
+                    return false;
+                } else {
+                    $('#password').removeClass("is-invalid");
+                }
+
+                if ($("#password_valid").val().length == 0) {
+                    $("#password_valid").addClass("is-invalid");
+                    return false;
+                } else {
+                    $("#password_valid").removeClass("is-invalid");
+                }
+
+                if ($("#password").val() != $("#password_valid").val()) {
+                    alert("El password y la confirmación no coinciden");
+                    return false;
+                }
+
+                if ($("#id_empleado").val().length == 0) {
+                    $("#id_empleado").addClass("is-invalid");
+                    return false;
+                } else {
+                    $("#id_empleado").removeClass("is-invalid");
+                }
+
+                $.ajax({
+                    method: 'POST',
+                    url: "/Usuarios/Editar",
+                    dataType: "json",
+                    data: {
+                        usuario: $("#usuario").val(),
+                        password: $("#password").val(),
+                        id_empleado: $("#id_empleado").val()
+                    }
+                }).then((response) => {
+                    $('#ModalNuevo').modal('hide');
+
+                    if (response > 0) {
+                        alert('Usuario actualizado con exito!');
+                    } else {
+                        alert('No se pudo realizar la operacion solicitada');
+                    }
+                    listado.ActualizarListado();
+                });
+            }
+        }
+
+        class ListadoDatos {
+            constructor(UsuariosList) {
+                this.Usuarios = UsuariosList;
+                this.initEvents();
+            }
+
+            initEvents() {
+                this.ConstruirListado();
+            }
+
+            //Generar listado de empleados
+            selectEmpleados() {
+                // Restableciendo select
+                $("#id_empleado").empty();
+
+                // Opcion inicial
+                var ini = $('<option>', {
+                    value: "",
+                    text: "Seleccione un empleado..."
+                });
+                $("#id_empleado").append(ini);
+
+                // filtrando los datos para mostrar solo los que no tengan usuario asignado
+                var datos = $.grep(this.Usuarios, function (elemento) {
+                    return elemento.usuario === '';
+                });
+
+                // Opciones de empleados
+                datos.forEach(item => {
+                    var option = $('<option>', {
+                        value: item.id_empleado,
+                        text: item.dpi + "/ " + item.nombre_completo
+                    });
+                    $("#id_empleado").append(option);
+                });
+            }
+
+            selectEmpleadosEdit() {
+                // Restableciendo select
+                $("#id_empleado").empty();
+
+                // Opcion inicial
+                var ini = $('<option>', {
+                    value: "",
+                    text: "Seleccione un empleado..."
+                });
+                $("#id_empleado").append(ini);
+
+                // Opciones de empleados
+                this.Usuarios.forEach(item => {
+                    var option = $('<option>', {
+                        value: item.id_empleado,
+                        text: item.dpi + "/ " + item.nombre_completo
+                    });
+                    $("#id_empleado").append(option);
+                });
+            }
+
+            // Funcion para generar la tabla para listado de empleado
+            ConstruirListado() {
+                var rows = "";
+                var contenido = 0;
+
+                var datos = $.grep(this.Usuarios, function (elemento) {
+                    return elemento.usuario != '';
+                });
+
+                datos.forEach(item => {
+                    contenido = 1;
+
+                    var estado = (item.estado == "A") ? '<i class="fa-solid fa-user-check" style="color: #00753D;"></i>' : '<i class="fa-solid fa-user-xmark" style="color: #DB1F26;"></i>';
+                    var opciones = "";
+
+                    if (item.estado == "A") {
+                        opciones = "" +
+                            "<a class='dropdown-item' href='#' onclick=listado.Buscar('" + item.usuario + "')>Editar</a>" +
+                            "<a class='dropdown-item' href='#' onclick=operaciones.Eliminar('" + item.usuario + "')>Borrar</a>";
+                    } else {
+                        opciones = "<a class='dropdown-item' href='#' onclick=listado.Visualizar('" + item.usuario + "')>Ver</a>";
+                    }
+
+                    rows += "<tr>" +
+                        "   <td>" + estado + "</td>" +
+                        "   <td>" + item.dpi + "</td>" +
+                        "   <td>" + item.nombre_completo + "</td>" +
+                        "   <td>" + item.usuario + "</td>" +
+                        "   <td>" + item.fecha_creacion + "</td>" +
+                        "   <td class='cuerpo-tabla text-center align-middle'>" +
+                        "       <div class='btn-group dropleft'>" +
+                        "           <button class='btn btn-light btn-sm' type='button' id='dropdownMenuButton' data-bs-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>" +
+                        "               <i class='fas fa-ellipsis-v'></i>" +
+                        "           </button>" +
+                        "           <div class='dropdown-menu' aria-labelledby='dropdownMenuButton'>" + opciones + "</div>" +
+                        "       </div>" +
+                        "   </td>" +
+                        "</tr>";
+                });
+
+                if (contenido == 0) {
+                    rows = "<tr><td colspan='6' class='cuerpo-tabla text-center align-middle'>No existen usuarios</td></tr>";
+                }
+
+                $("#BodyListado").html(rows);
+            }
+
+            // Carga el listado general de empleados
+            ActualizarListado() {
+                $.ajax({
+                    method: 'GET',
+                    url: "/Usuarios/Listado",
+                    dataType: "json"
+                }).then((response) => {
+                    this.Usuarios = response.ListadoUsuarios;
+                    this.ConstruirListado();
+                });
+            }
+
+            // Funcion para realizar busqueda de empleado y mostrar informacion en una modal para ser editada
+            Buscar(vCodigo) {
+                operaciones.limpiarFormulario();                
+                // Buscando el empleado de listado
+                let vRow = this.Usuarios.find(x => x.usuario == vCodigo);
+                this.selectEmpleadosEdit();
+
+                // Seteando valores a los inputs del formulario
+                $('#usuario').val(vRow.usuario);
+                $('#password').val(vRow.password);
+                $('#password_valid').val(vRow.password);
+                $('#id_empleado option[value=' + vRow.id_empleado + ']').attr('selected', 'selected');
+                $("#spanStatusEmpleado").css("visibility", "hidden");                
+
+                // Se muestra el footer y se cambia el evento clic del boton guardar
+                $('#FooterModal').css("visibility", "visible");
+                // Habilitando los elementos contenidos dentro del formulario de empleados
+                $('#datos_form').find(':input').prop('disabled', false);
+                $('#usuario').prop("disabled", true);
+                $('#password').prop("disabled", true);
+                $('#password_valid').prop("disabled", true);
+                // Mostrando la modal
+                $('#ModalNuevo').modal('show');
+                // Se cambia el evento clic del boton
+                $('#setForm').attr("onclick", "operaciones.EditarDatos();");
+            }
+
+            // Funcion para realizar busqueda de empleado y mostrar informacion en una modal
+            Visualizar(vCodigo) {
+                operaciones.limpiarFormulario();
+                // Buscando el elmpleado de listado
+                let vRow = this.Usuarios.find(x => x.usuario == vCodigo);
+                this.selectEmpleadosEdit();
+
+                $('#usuario').val(vRow.usuario);
+                $('#password').val(vRow.password);
+                $('#password_valid').val(vRow.password);
+                $('#id_empleado option[value=' + vRow.id_empleado + ']').attr('selected', 'selected');
+
+                if (vRow.Estado == "A") {
+                    $("#spanStatus").removeClass();
+                    $("#spanStatus").addClass("badge rounded-pill bg-success d-block");
+                    $("#spanStatus").html("Usuario activo");
+                    $("#spanStatus").css("visibility", "visible");
+                } else {
+                    $("#spanStatus").removeClass();
+                    $("#spanStatus").addClass("badge rounded-pill bg-danger d-block");
+                    $("#spanStatus").html("Usuario Inactivo");
+                    $("#spanStatus").css("visibility", "visible");
+                }
+
+                // Deshabilitando los elementos contenidos dentro del formulario de empleado
+                $('#datos_form').find(':input').prop('disabled', true);
+                // Se oculta el footer porque es solo informativo
+                $('#FooterModal').css("visibility", "hidden");
+                // Mostrando la modal
+                $('#ModalNuevo').modal('show');
+            }
+        }
+
+        var operaciones = new OperacionesDatos();
+        var listado = new ListadoDatos(@Html.Raw(JsonConvert.SerializeObject(Model.ListadoUsuarios)));
+    </script>
+} 

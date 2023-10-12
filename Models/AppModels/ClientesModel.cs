@@ -1,5 +1,4 @@
-﻿using GymApp.Controllers;
-using GymApp.Models.Entities;
+﻿using GymApp.Models.Entities;
 using Oracle.ManagedDataAccess.Client;
 using System;
 using System.Collections.Generic;
@@ -144,7 +143,7 @@ namespace GymApp.Models.AppModels
             catch (Exception e)
             {
                 vResult = -100;
-                log.AddToLog("CrearCliente", "Ocurrio un error al actualizar informacion del cliente " + e.Message + " " + e.Source + " " + e.StackTrace);
+                log.AddToLog("ActualizarCliente", "Ocurrio un error al actualizar informacion del cliente " + e.Message + " " + e.Source + " " + e.StackTrace);
             }
 
             return vResult;
@@ -168,7 +167,7 @@ namespace GymApp.Models.AppModels
             catch (Exception e)
             {
                 vResult = -100;
-                log.AddToLog("CrearCliente", "Ocurrio un error al dar de baja al cliente " + e.Message + " " + e.Source + " " + e.StackTrace);
+                log.AddToLog("EliminarCliente", "Ocurrio un error al dar de baja al cliente " + e.Message + " " + e.Source + " " + e.StackTrace);
             }
 
             return vResult;
