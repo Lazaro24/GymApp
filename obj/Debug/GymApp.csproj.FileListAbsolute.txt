@@ -37,7 +37,6 @@ D:\Proyectos sistemas\GYM-BRO\GymApp\bin\BCrypt.Net-Next.dll
 D:\Proyectos sistemas\GYM-BRO\GymApp\bin\BouncyCastle.Cryptography.dll
 D:\Proyectos sistemas\GYM-BRO\GymApp\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll
 D:\Proyectos sistemas\GYM-BRO\GymApp\bin\Microsoft.Web.Infrastructure.dll
-D:\Proyectos sistemas\GYM-BRO\GymApp\bin\MimeKit.dll
 D:\Proyectos sistemas\GYM-BRO\GymApp\bin\Newtonsoft.Json.dll
 D:\Proyectos sistemas\GYM-BRO\GymApp\bin\Oracle.ManagedDataAccess.dll
 D:\Proyectos sistemas\GYM-BRO\GymApp\bin\System.Buffers.dll
@@ -55,9 +54,6 @@ D:\Proyectos sistemas\GYM-BRO\GymApp\bin\WebGrease.dll
 D:\Proyectos sistemas\GYM-BRO\GymApp\bin\BCrypt.Net-Next.xml
 D:\Proyectos sistemas\GYM-BRO\GymApp\bin\BouncyCastle.Cryptography.xml
 D:\Proyectos sistemas\GYM-BRO\GymApp\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
-D:\Proyectos sistemas\GYM-BRO\GymApp\bin\MimeKit.pdb
-D:\Proyectos sistemas\GYM-BRO\GymApp\bin\MimeKit.xml
-D:\Proyectos sistemas\GYM-BRO\GymApp\bin\MimeKit.dll.config
 D:\Proyectos sistemas\GYM-BRO\GymApp\bin\Newtonsoft.Json.xml
 D:\Proyectos sistemas\GYM-BRO\GymApp\bin\System.Buffers.xml
 D:\Proyectos sistemas\GYM-BRO\GymApp\bin\System.Memory.xml

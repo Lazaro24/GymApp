@@ -83,7 +83,7 @@ namespace GymApp.Models.AppModels
             {
                 Query = ("INSERT INTO TBL_EMPLEADOS (ID_EMPLEADO, NOMBRE1, NOMBRE2, APELLIDO1, APELLIDO2, APELLIDO3, DPI, NIT, TELEFONO, DIRECCION, FECHA_CREACION, ID_GENERO, CORREO, ESTADO) " +
                     "VALUES((SELECT NVL(MAX(ID_EMPLEADO), 0) + 1 FROM TBL_EMPLEADOS), " +
-                    "   :NOMBRE1, :NOMBRE2, :APELLIDO1, :APELLIDO2, :APELLIDO3, :DPI, :NIT, :TELEFONO, :DIRECCION, TRUNC(SYSDATE), :ID_GENERO, :CORREO, 'A')");
+                    "   UPPER(:NOMBRE1), UPPER(:NOMBRE2), UPPER(:APELLIDO1), UPPER(:APELLIDO2), UPPER(:APELLIDO3), :DPI, :NIT, :TELEFONO, UPPER(:DIRECCION), TRUNC(SYSDATE), :ID_GENERO, :CORREO, 'A')");
 
                 GlobalDBParamObjectList param = new GlobalDBParamObjectList();
                 param.Add(new GlobalDBParamObject("NOMBRE1", c.Nombre1, OracleDbType.Varchar2));
@@ -117,9 +117,9 @@ namespace GymApp.Models.AppModels
             try
             {
                 Query = ("UPDATE TBL_EMPLEADOS " +
-                    "SET NOMBRE1 = :NOMBRE1, NOMBRE2 = :NOMBRE2, APELLIDO1 = :APELLIDO1, APELLIDO2 = :APELLIDO2, " +
-                    "APELLIDO3 = :APELLIDO3, NIT = :NIT, TELEFONO = :TELEFONO, DPI = :DPI, " +
-                    "DIRECCION = :DIRECCION, ID_GENERO = :ID_GENERO, CORREO = :CORREO " +
+                    "SET NOMBRE1 = UPPER(:NOMBRE1), NOMBRE2 = UPPER(:NOMBRE2), APELLIDO1 = UPPER(:APELLIDO1), APELLIDO2 = UPPER(:APELLIDO2), " +
+                    "APELLIDO3 = UPPER(:APELLIDO3), NIT = :NIT, TELEFONO = :TELEFONO, DPI = :DPI, " +
+                    "DIRECCION = UPPER(:DIRECCION), ID_GENERO = :ID_GENERO, CORREO = :CORREO " +
                     "WHERE ID_EMPLEADO = :ID_EMPLEADO");
 
                 GlobalDBParamObjectList param = new GlobalDBParamObjectList();

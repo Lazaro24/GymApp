@@ -5,9 +5,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using GymApp.Permissions;
 
 namespace GymApp.Controllers
 {
+    [ValidarSesion]
     public class EmpleadosController : Controller
     {
         EmpleadosModel pdModel = new EmpleadosModel();

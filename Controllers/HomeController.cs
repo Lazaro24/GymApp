@@ -5,10 +5,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using GymApp.Permissions;
 
 namespace GymApp.Controllers
 {
-    //[ValidarSesion] Se descomenta cuando halla login
+    [ValidarSesion]
     public class HomeController : Controller
     {
         HomeProc home = new HomeProc();

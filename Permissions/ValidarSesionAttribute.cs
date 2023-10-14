@@ -8,13 +8,13 @@ namespace GymApp.Permissions
 {
     public class ValidarSesionAttribute : ActionFilterAttribute
     {
-        /*public override void OnActionExecuting(ActionExecutingContext filterContext)
+        public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             if (HttpContext.Current.Session["Usuario"] == null)
             {
-                filterContext.Result = new RedirectResult("~/Login/Acceso");
+                filterContext.Result = new RedirectResult("~/Login/Ingreso");
             }
             base.OnActionExecuting(filterContext);
-        }*/
+        }
     }
 }
