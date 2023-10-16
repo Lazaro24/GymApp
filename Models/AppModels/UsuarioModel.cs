@@ -70,6 +70,94 @@ namespace GymApp.Models.AppModels
             return loggeoUser;
         }
 
+        public Boolean setUpdatePassword(string usuario, string clave)
+        {
+            GlobalDB db = new GlobalDB();
+            int vResult = 0;
+            string cmdText = "";
+            var cryptPass = BCrypt.Net.BCrypt.HashPassword(clave);
+            bool update = false;
+
+            try
+            {
+                cmdText = "UPDATE TBL_USUARIO SET PASSWORD = :PASSWORD WHERE USUARIO = :USUARIO ";
+
+                GlobalDBParamObjectList param = new GlobalDBParamObjectList();
+                param.Add(new GlobalDBParamObject("PASSWORD", cryptPass, OracleDbType.Varchar2));
+                param.Add(new GlobalDBParamObject("USUARIO", usuario, OracleDbType.Varchar2));
+
+                vResult = db.setQuery(cmdText, param);
+
+                if (vResult > 0)
+                {
+                    update = true;
+                }
+            }
+            catch (Exception e)
+            {
+                log.AddToLog(e);
+            }
+
+            return update;
+        }
+
+        public String RecuperaPassword(String usuario, string clave)
+        {
+            GlobalDB db = new GlobalDB();
+            string vResult = "OK|Contraseña actualizada con exito!";
+            string commandText = "";
+
+            try
+            {
+                commandText = (
+                    "SELECT TU.USUARIO, TU.ID_EMPLEADO, TE.NOMBRE1, TE.CORREO " +
+                    "FROM TBL_USUARIO TU " +
+                    "INNER JOIN TBL_EMPLEADOS TE ON TE.ID_EMPLEADO = TU.ID_EMPLEADO " +
+                    "WHERE TE.ESTADO = 'A' " +
+                    "AND TU.USUARIO = :USUARIO "
+                    );
+                
+                string connectionString = db.getOracleConnectionStr();
+                using (OracleConnection connection = new OracleConnection(connectionString))
+                {
+                    using (OracleCommand command = new OracleCommand(commandText, connection))
+                    {
+                        try
+                        {
+                            command.Parameters.Add("USUARIO", OracleDbType.Varchar2).Value = usuario;
+
+                            connection.Open();
+
+                            using (OracleDataReader dr = command.ExecuteReader())
+                            {
+                                log.AddToLog("CargarUsuario", "Generando datos del usuario [" + commandText + "]");
+
+                                if (!dr.Read())
+                                {
+                                    return "ERROR|No se encontro el usuario ingresado";
+                                }
+
+                                if(!setUpdatePassword(usuario, clave))
+                                {
+                                    return "ERROR|No se pudo realizar la actualización de la contraseña";
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            log.AddToLog(ex);
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                log.AddToLog(e);
+            }
+
+            return vResult;
+        }
+
         public List<entUsuarios> ListadoDatos()
         {
             GlobalDB db = new GlobalDB();

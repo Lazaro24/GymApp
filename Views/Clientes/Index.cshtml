@@ -429,14 +429,12 @@
                     contenido = 1;
                     console.log(item);
                     var estado = (item.Estado == "A") ? '<i class="fa-solid fa-user-check" style="color: #00753D;"></i>' : '<i class="fa-solid fa-user-xmark" style="color: #DB1F26;"></i>';
-                    var opciones = "";
-
+                    
+                    var opciones = "<a class='dropdown-item' href='#' onclick=listado.Buscar('" + item.IdCliente + "')>Editar</a>";                       
                     if (item.Estado == "A") {
-                        opciones = "" +
-                            "<a class='dropdown-item' href='#' onclick=listado.Buscar('" + item.IdCliente + "')>Editar</a>" +
-                            "<a class='dropdown-item' href='#' onclick=operaciones.Eliminar('" + item.IdCliente + "')>Borrar</a>";
+                        opciones += "<a class='dropdown-item' href='#' onclick=operaciones.Eliminar('" + item.IdCliente + "')>Borrar</a>";
                     } else {
-                        opciones = "<a class='dropdown-item' href='#' onclick=listado.VisualizarCliente('" + item.IdCliente + "')>Ver</a>";
+                        opciones += "<a class='dropdown-item' href='#' onclick=listado.VisualizarCliente('" + item.IdCliente + "')>Ver</a>";
                     }
 
                     rows += "<tr>" +

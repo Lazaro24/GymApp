@@ -50,6 +50,57 @@ namespace GymApp.Controllers
             }            
         }
 
+        public ActionResult Recuperacion()
+        {
+            return View();
+        }
 
+        [HttpPost]
+        public ActionResult Recuperacion(string usuario, string clave, string clave_confirm)
+        {
+            UsuarioModel model = new UsuarioModel();
+            string Result = "";
+
+            if (!clave.Equals(clave_confirm))
+            {
+                string vMensaje = "Las contraseñas ingresadas no coinciden";
+                setMessage("ERROR", usuario, clave, clave_confirm, vMensaje);
+
+                return RedirectToAction("Recuperacion", "Login");
+            }
+
+            Result = model.RecuperaPassword(usuario, clave);
+            string[] vResult = Result.Split('|');
+
+            setMessage(vResult[0], null, null, null, vResult[1]);
+
+            if (vResult[0].Equals("OK"))
+            {
+                // Salir de la sesion para inicializar una nueva
+                Salir();
+            }
+            return RedirectToAction("Recuperacion", "Login");
+        }
+
+        public ActionResult Salir()
+        {
+            // Limpiar valores temporales
+            TempData["vLogin"] = null;
+            TempData["vUser"] = null;
+            TempData["vClave"] = null;
+            // Quitar datos de sesion
+            Session["usuario"] = null;
+
+            return RedirectToAction("Ingreso", "Login");
+        }
+
+        public void setMessage(string result, string usuario, string clave, string clave_confirm, string vMensaje)
+        {
+            TempData["vReset"] = result;
+            TempData["vUser"] = usuario;
+            TempData["vPass"] = clave;
+            TempData["vPassC"] = clave_confirm;
+            TempData["vMessage"] = vMensaje;
+        }
     }
 }
