@@ -54,8 +54,7 @@
                         </a>
                         <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
-                                <a class="nav-link" href="layout-static.html">Pagos</a>
-                                <a class="nav-link" href="layout-sidenav-light.html">Clientes</a>
+                                <a class="nav-link" href="@Url.Action("Reporte", "Reportes")">Pagos</a>
                             </nav>
                         </div>
                         <div class="sb-sidenav-menu-heading">Configuración</div>
@@ -93,6 +92,8 @@
     @Scripts.Render("~/bundles/scripts")
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js" type="text/javascript" charset="utf8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
     @RenderSection("scripts", required: false)
 </body>
 </html>

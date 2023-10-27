@@ -140,10 +140,14 @@
     <Compile Include="Controllers\EmpleadosController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\PagosController.cs" />
+    <Compile Include="Controllers\ReportesController.cs" />
     <Compile Include="Controllers\UsuariosController.cs" />
     <Compile Include="Models\AppModels\EmpleadosModel.cs" />
+    <Compile Include="Models\AppModels\PagosModel.cs" />
+    <Compile Include="Models\AppModels\ReportesModel.cs" />
     <Compile Include="Models\AppModels\UsuarioModel.cs" />
     <Compile Include="Models\Entities\entEmpleados.cs" />
+    <Compile Include="Models\Entities\entPagos.cs" />
     <Compile Include="Models\GlobalDBParamObject.cs" />
     <Compile Include="Models\GlobalDBParamObjectList.cs" />
     <Compile Include="Models\Log.cs" />
@@ -303,10 +307,11 @@
     <Content Include="Views\Empleados\Index.cshtml" />
     <Content Include="Views\Usuarios\Index.cshtml" />
     <Content Include="Views\Login\Recuperacion.cshtml" />
+    <Content Include="Views\Pagos\Index.cshtml" />
+    <Content Include="Views\Reportes\Reporte.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Views\Pagos\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

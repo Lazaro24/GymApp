@@ -1,0 +1,162 @@
+﻿
+@using Newtonsoft.Json;
+@{
+    ViewBag.Title = "Reporte";
+}
+<div class="container p-2 rounded-2 mt-2" style="background-color: #B7E7D8;">
+    <form class="row g-3">
+        <div class="col-md-2">
+            <label for="selectConcepto" class="form-label">CONCEPTO</label>
+            <select class="form-select form-select-sm" aria-label=".form-select-sm example" id="selectConcepto">
+                <option value="">Seleccione...</option>
+                <option value="I">Inscripciones</option>
+                <option value="M">Mensualidades</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label for="selectTipo" class="form-label">TIPO PAGO</label>
+            <select class="form-select form-select-sm" aria-label=".form-select-sm example" id="selectTipo">
+                <option value="">Seleccione...</option>
+                <option value="1">Pendientes</option>
+                <option value="2">Pagados</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label for="txtFechaInicio" class="form-label">FECHA INICIAL</label>
+            <input type="date" id="txtFechaInicio" class="form-control form-control-sm" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="col-md-2">
+            <label for="txtFechaFinal" class="form-label">FECHA FINAL</label>
+            <input type="date" id="txtFechaFinal" class="form-control form-control-sm" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="col-md-2">
+            <label for="txtIdCliente" class="form-label">ID CLIENTE</label>
+            <input type="text" id="txtIdCliente" class="form-control form-control-sm" />
+        </div>
+        <div class="col-2 d-flex align-items-end">
+            <button type="button" class="form-control btn btn-outline-primary" onclick="GenerarReporte();">GenerarReporte</button>
+        </div>
+    </form>
+</div>
+<div class="container mt-2" id="divExports">
+    <div class="row g-3">
+        <div class="col-md-3">
+            <button class="btn btn-outline-danger" onclick="generarPDF();"><i class="fa-solid fa-file-pdf"></i> Pdf</button>
+            <button class="btn btn-outline-success" onclick="generarExcel();"><i class="fa-solid fa-file-excel"></i> Excel</button>
+        </div>
+    </div>
+</div>
+<div class="mt-2 bg-light" id="resultadoReporte">
+    <table class="table table-hover table-sm pt-1" id="tbReportesPP" style="display:none;">
+        <thead class="bg-primary text-white text-center">
+            <tr>
+                <th width="10%">Correlativo</th>
+                <th width="10%">Id cliente</th>
+                <th width="35%">Nombre cliente</th>
+                <th width="10%">Teléfono</th>
+                <th width="15%">Fecha emisión</th>
+                <th width="10%">Concepto</th>
+                <th width="10%">Monto</th>
+            </tr>
+        </thead>
+        <tbody id="resultadosPP">
+        </tbody>
+    </table>
+    <table class="table table-hover table-sm pt-1" id="tbReportesPG" style="display:none;">
+        <thead class="bg-primary text-white text-center">
+            <tr>
+                <th width="10%">Correlativo</th>
+                <th width="10%">Id cliente</th>
+                <th width="35%">Nombre cliente</th>
+                <th width="10%">Teléfono</th>
+                <th width="15%">Fecha emisión</th>
+                <th width="15%">Fecha pago</th>
+                <th width="10%">Concepto</th>
+                <th width="10%">Monto</th>
+            </tr>
+        </thead>
+        <tbody id="resultadosPG">
+        </tbody>
+    </table>
+</div>
+@section scripts{
+    <script type="text/javascript">
+        function generarPDF() {
+            const doc = new jsPDF();
+            doc.fromHTML(document.getElementById("resultadoReporte"), 10, 10);
+            doc.save("reporte.pdf");
+        }
+
+        function generarExcel() {
+            const tabla = document.getElementById("resultadoReporte");
+            const wb = XLSX.utils.table_to_book(tabla, { sheet: "Reporte" });
+            XLSX.writeFile(wb, "reporte.xlsx");
+        }
+
+        function aFecha(vfecha, sepadador, salida) {
+            var val = vfecha.split(sepadador);
+            return val[2] + salida + val[1] + salida + val[0];
+        }
+
+        function GenerarReporte() {
+            $("#tbReportesPP").css("display", "none");
+            $("#tbReportesPG").css("display", "none");
+
+            $.ajax({
+                method: 'GET',
+                url: "/Reportes/ReportePagos",
+                dataType: "json",
+                data: {
+                    id_cliente: $("#txtIdCliente").val(),
+                    concepto: $("#selectConcepto").val(),
+                    fecha_inicio: aFecha($("#txtFechaInicio").val(), "-", "/"),
+                    fecha_final: aFecha($("#txtFechaFinal").val(), "-", "/"),
+                    tipo_reporte: $("#selectTipo").val()
+                }
+            }).then((response) => {
+                PresentarResultado(response);                
+            });
+        }
+
+        function PresentarResultado(data) {
+            // 1=Pendientes, 2=Pagados
+            if ($("#selectTipo").val() == "1") {
+                $("#tbReportesPP").css("display", "block");
+                var rows = "";
+                var contenido = 0;
+
+                data.forEach(item => {
+                    rows += "" +
+                        "<tr>" +
+                        "   <td>" + item.correlativo + "</td>" +
+                        "   <td>" + item.id_cliente + "</td>" +
+                        "   <td>" + item.nombre_completo + "</td>" +
+                        "   <td>" + item.telefono + "</td>" +
+                        "   <td>" + item.fecha_emision + "</td>" +
+                        "   <td>" + item.concepto + "</td>" +
+                        "   <td>" + item.monto + "</td>" +
+                        "</tr>";
+                });
+
+            } else {
+                $("#tbReportesPG").css("display", "block");
+                var rows = "";
+                var contenido = 0;
+
+                data.forEach(item => {
+                    rows += "" +
+                        "<tr>" +
+                        "   <td>" + item.correlativo + "</td>" +
+                        "   <td>" + item.id_cliente + "</td>" +
+                        "   <td>" + item.nombre_completo + "</td>" +
+                        "   <td>" + item.telefono + "</td>" +
+                        "   <td>" + item.fecha_emision + "</td>" +
+                        "   <td>" + item.fecha_pago + "</td>" +
+                        "   <td>" + item.concepto + "</td>" +
+                        "   <td>" + item.monto + "</td>" +
+                        "</tr>";
+                });
+            }
+        }
+    </script>
+}

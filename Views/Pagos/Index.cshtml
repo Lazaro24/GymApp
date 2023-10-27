@@ -1,0 +1,336 @@
+﻿@using Newtonsoft.Json;
+@model GymApp.Models.Entities.getForma
+@{
+    ViewBag.Title = "Index";
+}
+<div class="card">
+    <h5 class="card-header text-center">Registro de pagos</h5>
+    <div class="card-body">
+        <div class="container p-2 rounded-2" style="background-color: #E5E7EB;">
+            <form class="row g-3">
+                <div class="col-md-3">
+                    <div class="input-group">
+                        <label class="input-group-text" for="selectTipoBusqueda">Búsqueda por</label>
+                        <select class="form-select" id="selectTipoBusqueda">
+                            <option value="1">CÓDIGO</option>
+                            <option value="2">DPI</option>
+                            <option value="3">NIT</option>
+                            <option value="4">TELÉFONO</option>
+                            <option value="5">NOMBRE</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <input type="text" class="form-control" placeholder="Busqueda" aria-label="Valor de busqueda" id="valorBusqueda">
+                    <div class="invalid-feedback">Por favor ingrese un dato para la búsqueda</div>
+                </div>
+                <div class="col-1">
+                    <button type="button" class="btn btn-outline-primary" onclick="listado.GetCliente();">Buscar</button>
+                </div>                
+            </form>
+        </div>
+        <div class="container p-2 mt-2 rounded-2" style="background-color: #B3EBD0; " id="datosCliente">
+            <form class="row g-3">
+                <div class="form-group col-md-9">                    
+                    <select id="selectCliente" class="form-select form-select-sm">
+                    </select>                    
+                </div>
+                <div class="col-md-3">
+                    <div class="input-group">
+                        <label class="input-group-text" for="selectConcepto">Concepto</label>
+                        <select class="form-select" id="selectConcepto">
+                        </select>
+                    </div>
+                </div>
+                <div class="row g-3" id="datosPago">
+                    <div class="col-md-2">
+                        <label for="txtCodigo" class="form-label">CÓDIGO</label>
+                        <input type="text" class="form-control form-select-sm bg-info" id="txtCodigo" readonly>
+                    </div>
+                    <div class="col-md-5">
+                        <label for="txtNombre" class="form-label">NOMBRE COMPLETO</label>
+                        <input type="text" class="form-control form-select-sm bg-info" id="txtNombre" readonly>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="selectCuotas" class="form-label">CUOTAS PENDIENTES</label>
+                        <select id="selectCuotas" class="form-select form-select-sm">
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="txtNitPago" class="form-label">NIT</label>                       
+                        <input type="text" class="form-control form-select-sm bg-info" id="txtNitPago" readonly>                        
+                    </div>
+                </div>                
+            </form>
+        </div>
+        <div class="container p-2 mt-2 rounded-2" id="formasPago" style="background-color: #B7E7D8;">
+            <form class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label" for="selectFormaPago">FORMA PAGO</label>
+                    <select class="form-select" id="selectFormaPago">
+                    </select>
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="txtDocumento" class="form-label">NO. DOCUMENTO</label>
+                    <input type="text" class="form-control" id="txtDocumento">
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="txtAutorizacion" class="form-label">AUTORIZACIÓN</label>
+                    <input type="text" class="form-control" id="txtAutorizacion">
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="txtMonto" class="form-label">MONTO</label>
+                    <div class="input-group">
+                        <label class="input-group-text" for="txtMonto">Q.</label>
+                        <input type="text" class="form-control" id="txtMonto" readonly>
+                    </div>                    
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="card-footer text-center">
+        <button type="button" id="btnGuardar" class="btn btn-outline-success" onclick="listado.GuardarDatos();">Guardar</button>
+        <button type="button" id="btnCancelar" class="btn btn-outline-danger" onclick="listado.IniciarVentana();">Cancelar</button>
+    </div>
+</div>
+@section scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#datosCliente").hide();
+            $("#formasPago").hide(); 
+            $("#datosPago").hide(); 
+        });
+
+        class ListadoDatos {
+            constructor(PagosList) {
+                this.FormasPagoList = PagosList.ListaFP;
+                this.ConceptosList = PagosList.ListaC;
+                this.Cliente = null;
+                this.PagosPendientes = null;
+                this.initEvents();
+            }
+
+            initEvents() {
+                this.IniciarVentana();                
+            }
+
+            IniciarVentana() {
+                $("#datosCliente").hide();
+                $("#formasPago").hide();
+                $("#datosPago").hide();
+                $("#selectConcepto").empty();
+                $("#selectFormaPago").empty();
+                $("#selectCliente").empty();
+                $("#valorBusqueda").val("");
+                $("#txtCodigo").val("");                
+                $("#txtNombre").val("");
+                $("#txtNitPago").val("");
+                $("#txtDocumento").val("");
+                $("#txtAutorizacion").val("");
+                $("#txtMonto").val("");
+
+                $("#selectConcepto").append($('<option>', {
+                    value: "",
+                    text: "Seleccione..."
+                }));
+                this.ConceptosList.forEach(item => {
+                    $("#selectConcepto").append($('<option>', {
+                        value: item.id_concepto,
+                        text: item.descripcion,
+                        monto: item.monto
+                    }));
+                });
+
+                $("#selectFormaPago").append($('<option>', {
+                    value: "",
+                    text: "Seleccione..."
+                }));
+                this.FormasPagoList.forEach(item => {
+                    $("#selectFormaPago").append($('<option>', {
+                        value: item.id_forma_pago,
+                        text: item.descripcion
+                    }));
+                });
+            }
+
+            GetCliente() {
+                var valor = $("#valorBusqueda").val();
+
+                if (valor.length == 0) {
+                    $("#valorBusqueda").addClass("is-invalid");
+                } else {
+                    $("#valorBusqueda").removeClass("is-invalid");
+                }
+
+                $.ajax({
+                    method: 'GET',
+                    url: "/Pagos/getCliente",
+                    dataType: "json",
+                    data: {
+                        tipoBusqueda: $("#selectTipoBusqueda").val(),
+                        valor: $("#valorBusqueda").val()
+                    }
+                }).then((response) => {
+                    this.Cliente = response;
+
+                    if (this.Cliente.length > 0) {
+                        this.MostrarClientes();
+                    } else {
+                        alert("No se encontraron clientes con los datos ingresados");
+                    }
+                });
+            }
+
+            MostrarClientes() {
+                $("#selectCliente").empty();
+
+                $("#selectCliente").append($('<option>', {
+                    value: "",
+                    text: "SELECCIONE EL CLIENTE..."
+                }));
+
+                this.Cliente.forEach(item => {
+                    $("#selectCliente").append($('<option>', {
+                        value: item.id_cliente,
+                        text: item.id_cliente + ' / ' + item.nombre_completo + ' / DPI. ' + item.dpi + ' / Tel. ' + item.telefono + " / NIT. " + item.nit
+                    }));
+                });
+                
+                $("#datosCliente").show();
+
+                $("#selectCliente").focus();
+                $("#selectCliente").val("");
+                $("#selectCliente").change(function () {
+                    $("#selectConcepto").val("");
+                    $("#selectConcepto").focus();
+                });
+
+                $("#selectConcepto").change(function () {
+                    $("#datosPago").hide();
+
+                    if ($("#selectCliente").val().length == 0) {
+                        alert("Debe seleccionar un cliente para poder continuar");
+                        $("#selectCliente").focus();
+                        return;
+                    }
+
+                    if ($(this).val() == 'I') {
+                        var cuota = $(this).find('option:selected').attr('monto');
+                        $("#txtMonto").val(cuota);
+                        listado.SetFormasPago();
+                    }
+
+                    if ($(this).val() == 'M') {
+                        listado.ExtraerCuotas();
+                    }
+                });                
+            }
+
+            ExtraerCuotas() {
+                $.ajax({
+                    method: 'GET',
+                    url: "/Pagos/ExtraerCuotas",
+                    dataType: "json",
+                    data: {
+                        id_cliente: $("#selectCliente").val()
+                    }
+                }).then((response) => {
+                    this.PagosPendientes = response;
+
+                    if (this.PagosPendientes.length > 0) {
+                        this.CargarCuotasPendientes();
+                    } else {
+                        alert("No se encontraron cuotas pendientes de pago");
+                    }
+                });
+            }
+
+            SetFormasPago() {
+                $("#selectFormaPago").val("");
+                $("#txtDocumento").hide();
+                $("#txtAutorizacion").hide();
+
+                $("#selectFormaPago").change(function () {
+                    $("#txtDocumento").hide();
+                    $("#txtAutorizacion").hide();
+
+                    switch ($(this).val()) {
+                        case "C":
+                            $("#txtDocumento").show();
+                            $("#txtAutorizacion").show();
+                            break;
+
+                        case "T":
+                            $("#txtAutorizacion").show();
+                            break;
+                    }
+                });
+
+                $("#formasPago").show();
+            }
+
+            CargarCuotasPendientes() {
+                $("#selectCuotas").empty();
+
+                $("#txtCodigo").val(this.PagosPendientes[0].id_cliente);
+                $("#txtNombre").val(this.PagosPendientes[0].nombre_completo);
+                $("#txtNitPago").val(this.PagosPendientes[0].nit);
+
+                $("#selectCuotas").removeClass("bg-info");
+                $("#selectCuotas").attr("disabled", false);
+
+                $("#selectCuotas").append($('<option>', {
+                    value: "",
+                    text: "Seleccione la cuota..."
+                }));
+
+                this.PagosPendientes.forEach(item => {
+                    $("#selectCuotas").append($('<option>', {
+                        value: item.correlativo,
+                        text: item.concepto + " - " + item.fecha_emision,
+                        monto: item.monto
+                    }));
+                });
+
+                $("#selectCuotas").focus();
+
+                $("#selectCuotas").change(function () {
+                    var cuota = $(this).find('option:selected').attr('monto');
+                    $("#txtMonto").val(cuota);
+
+                    listado.SetFormasPago();
+                    $("#formasPago").show();
+                });
+
+                
+                $("#datosPago").show();
+                             
+            }
+
+            GuardarDatos() {
+                $.ajax({
+                    method: 'POST',
+                    url: "/Pagos/GuardarPago",
+                    dataType: "json",
+                    data: {
+                        concepto: $("#selectConcepto").val(),
+                        id_cliente: $("#selectCliente").val(),
+                        correlativo: $("#selectCuotas").val(),
+                        id_forma_pago: $("#selectFormaPago").val(),
+                        monto: $("#txtMonto").val(),
+                        numero_documento: $("#txtDocumento").val(),
+                        autorizacion: $("#txtAutorizacion").val()
+                    }
+                }).then((response) => {
+                    if (response > 0) {
+                        alert("Pago realizado con exito!");
+                        this.initEvents();
+                    } else {
+                        alert("Ocurrio un error registrando el pago");
+                    }
+                });
+            }
+        }
+        var listado = new ListadoDatos(@Html.Raw(JsonConvert.SerializeObject(Model)));
+    </script>
+}
