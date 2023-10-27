@@ -1,5 +1,6 @@
 ﻿using GymApp.Models.AppModels;
 using GymApp.Models.Entities;
+using GymApp.Permissions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +9,7 @@ using System.Web.Mvc;
 
 namespace GymApp.Controllers
 {
+    [ValidarSesion]
     public class PagosController : Controller
     {
         PagosModel model = new PagosModel();

@@ -38,17 +38,9 @@
         </div>
     </form>
 </div>
-<div class="container mt-2" id="divExports">
-    <div class="row g-3">
-        <div class="col-md-3">
-            <button class="btn btn-outline-danger" onclick="generarPDF();"><i class="fa-solid fa-file-pdf"></i> Pdf</button>
-            <button class="btn btn-outline-success" onclick="generarExcel();"><i class="fa-solid fa-file-excel"></i> Excel</button>
-        </div>
-    </div>
-</div>
 <div class="mt-2 bg-light" id="resultadoReporte">
     <table class="table table-hover table-sm pt-1 w-100" id="tbReportesPP" style="display:none;">
-        <thead class="bg-primary text-white text-center">
+        <thead class="bg-primary text-white">
             <tr>
                 <th width="10%">Correlativo</th>
                 <th width="10%">Id cliente</th>
@@ -62,8 +54,8 @@
         <tbody id="resultadosPP">
         </tbody>
     </table>
-    <table class="table table-hover table-sm pt-1 w-100" id="tbReportesPG" style="display:none;">
-        <thead class="bg-primary text-white text-center">
+    <table class="table table-hover table-sm pt-1 w-100" id="tbReportesPG" name="tbReportesPG" style="display:none;">
+        <thead class="bg-primary text-white">
             <tr>
                 <th width="10%">Correlativo</th>
                 <th width="10%">Id cliente</th>
@@ -80,19 +72,7 @@
     </table>
 </div>
 @section scripts{
-    <script type="text/javascript">
-        function generarPDF() {
-            const doc = new jsPDF();
-            doc.fromHTML(document.getElementById("resultadoReporte"), 10, 10);
-            doc.save("reporte.pdf");
-        }
-
-        function generarExcel() {
-            const tabla = document.getElementById("resultadoReporte");
-            const wb = XLSX.utils.table_to_book(tabla, { sheet: "Reporte" });
-            XLSX.writeFile(wb, "reporte.xlsx");
-        }
-
+    <script type="text/javascript">        
         function aFecha(vfecha, sepadador, salida) {
             var val = vfecha.split(sepadador);
             return val[2] + salida + val[1] + salida + val[0];
@@ -103,7 +83,7 @@
             $("#resultadosPG").html("");
             $("#tbReportesPP").css("display", "none");
             $("#tbReportesPG").css("display", "none");
-            
+
 
             if ($("#selectConcepto").val().length == 0) {
                 alert("Debe seleccionar un concepto de pagos");
@@ -130,7 +110,7 @@
                 }
             }).then((response) => {
                 console.log(response);
-                PresentarResultado(response);                
+                PresentarResultado(response);
             });
         }
 
@@ -140,7 +120,7 @@
                 $("#tbReportesPP").css("display", "block");
                 var rows = "";
                 var contenido = 0;
-                
+
 
                 data.forEach(item => {
                     contenido = 1;

@@ -1,4 +1,5 @@
 ﻿using GymApp.Models.AppModels;
+using GymApp.Permissions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +8,7 @@ using System.Web.Mvc;
 
 namespace GymApp.Controllers
 {
+    [ValidarSesion]
     public class ReportesController : Controller
     {
         ReportesModel model = new ReportesModel();
