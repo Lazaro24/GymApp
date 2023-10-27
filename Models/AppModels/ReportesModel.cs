@@ -28,7 +28,31 @@ namespace GymApp.Models.AppModels
                     "from TBL_CONTROL_PAGOS tcp " +
                     "inner join TBL_CLIENTE tc on tc.ID_CLIENTE = tcp.ID_CLIENTE " +
                     "inner join TBL_CONCEPTO tc2 on tc2.ID_CONCEPTO = tcp.ID_CONCEPTO " +
-                    "where TCP.ID_CONCEPTO = :CONCEPTO ";                
+                    "where TCP.ID_CONCEPTO = '" + concepto + "' ";
+
+                //// realizar busqueda por cliente
+                if (id_cliente.Length > 0)
+                {
+                    Query += " and tcp.id_cliente = '" + id_cliente + "' ";
+                }
+
+                //// Si concepto es inscripciones por defecto toma fecha pago
+                if (concepto == "I")
+                {
+                    Query += " and trunc(tcp.fecha_pago) between to_date('" + fecha_inicio + "', 'dd/MM/yyyy') AND to_date('" + fecha_final + "', 'dd/MM/yyyy')  ";
+                }
+                else
+                {
+                    // tipo_reporte 1=Pendientes, 2=Pagados
+                    if (tipo_reporte == "1")
+                    {
+                        Query += " and tcp.id_estado_pago = 1 and trunc(tcp.fecha_emision) between to_date('" + fecha_inicio + "', 'dd/MM/yyyy') AND to_date('" + fecha_final + "', 'dd/MM/yyyy') ";
+                    }
+                    else
+                    {
+                        Query += "  and tcp.id_estado_pago = 2 and trunc(tcp.FECHA_PAGO) between to_date('" + fecha_inicio + "', 'dd/MM/yyyy') AND to_date('" + fecha_final + "', 'dd/MM/yyyy') ";
+                    }
+                }
 
                 string connectionString = db.getOracleConnectionStr();
                 using (OracleConnection connection = new OracleConnection(connectionString))
@@ -37,58 +61,33 @@ namespace GymApp.Models.AppModels
                     {
                         try
                         {
-                            command.Parameters.Add("CONCEPTO", OracleDbType.Varchar2).Value = concepto;
-
-                            // realizar busqueda por cliente
-                            if (id_cliente.Length > 0)
-                            {
-                                Query += " and tcp.id_cliente = :ID_CLIENTE ";
-                                command.Parameters.Add("ID_CLIENTE", OracleDbType.Varchar2).Value = id_cliente;
-                            }
-
-                            // Si concepto es inscripciones por defecto toma fecha pago
-                            if(concepto == "I")
-                            {
-                                Query += " and trunc(tcp.fecha_pago) between to_date(':FECHA_INICIO', 'dd/mm/yyyy') AND to_date(':FECHA_FINAL', 'dd/mm/yyyy')  ";
-                            }
-                            else
-                            {
-                                // tipo_reporte 1=Pendientes, 2=Pagados
-                                if (tipo_reporte == "1")
-                                {
-                                    Query += " and trunc(tcp.fecha_emision) between to_date(':FECHA_INICIO', 'dd/mm/yyyy') AND to_date(':FECHA_FINAL', 'dd/mm/yyyy') and tcp.id_estado_pago = 1 ";
-                                }
-                                else
-                                {
-                                    Query += " and trunc(tcp.FECHA_PAGO) between to_date(':FECHA_INICIO', 'dd/mm/yyyy') AND to_date(':FECHA_FINAL', 'dd/mm/yyyy') and tcp.id_estado_pago = 2 ";
-                                }
-                            }
-                            
-                            command.Parameters.Add("FECHA_INICIO", OracleDbType.Varchar2).Value = fecha_inicio;
-                            command.Parameters.Add("FECHA_FINAL", OracleDbType.Varchar2).Value = fecha_final;
-
                             connection.Open();
                             log.AddToLog("ReportePagos", "Generando listado de pagos {" + Query + "}");
+
                             using (OracleDataReader dr = command.ExecuteReader())
                             {
-                                while (dr.Read())
+                                if (dr.HasRows)
                                 {
-                                    var Pago = new entPagos
+                                    while (dr.Read())
                                     {
-                                        correlativo = dr.IsDBNull(0) ? 0 : dr.GetInt64(0),
-                                        id_cliente = dr.IsDBNull(1) ? "" : dr.GetString(1),
-                                        nombre_completo = dr.IsDBNull(2) ? "" : dr.GetString(2),
-                                        dpi = dr.IsDBNull(3) ? 0 : dr.GetInt64(3),
-                                        nit = dr.IsDBNull(4) ? 0 : dr.GetInt64(4),
-                                        telefono = dr.IsDBNull(5) ? 0 : dr.GetInt64(5),
-                                        fecha_emision = dr.IsDBNull(6) ? "" : dr.GetDateTime(6).ToString("dd/MM/yyyy"),
-                                        id_concepto = dr.IsDBNull(7) ? "" : dr.GetString(7),
-                                        concepto = dr.IsDBNull(8) ? "" : dr.GetString(8),
-                                        monto = dr.IsDBNull(9) ? new decimal(0.00) : dr.GetDecimal(9),
-                                        id_estado_pago = dr.IsDBNull(13) ? 0 : dr.GetInt64(13)
-                                    };
-                                    ReportePagos.Add(Pago);
-                                }
+                                        var Pago = new entPagos
+                                        {
+                                            correlativo = dr.IsDBNull(0) ? 0 : dr.GetInt64(0),
+                                            id_cliente = dr.IsDBNull(1) ? "" : dr.GetString(1),
+                                            nombre_completo = dr.IsDBNull(2) ? "" : dr.GetString(2),
+                                            dpi = dr.IsDBNull(3) ? 0 : dr.GetInt64(3),
+                                            nit = dr.IsDBNull(4) ? 0 : dr.GetInt64(4),
+                                            telefono = dr.IsDBNull(5) ? 0 : dr.GetInt64(5),
+                                            fecha_emision = dr.IsDBNull(6) ? "" : dr.GetDateTime(6).ToString("dd/MM/yyyy"),
+                                            fecha_pago = dr.IsDBNull(10) ? "" : dr.GetDateTime(10).ToString("dd/MM/yyyy"),
+                                            id_concepto = dr.IsDBNull(7) ? "" : dr.GetString(7),
+                                            concepto = dr.IsDBNull(8) ? "" : dr.GetString(8),
+                                            monto = dr.IsDBNull(9) ? new decimal(0.00) : dr.GetDecimal(9),
+                                            id_estado_pago = dr.IsDBNull(13) ? 0 : dr.GetInt64(13)
+                                        };
+                                        ReportePagos.Add(Pago);
+                                    }
+                                }                                
                             }
                         }
                         catch (Exception ex)

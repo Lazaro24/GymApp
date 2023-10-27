@@ -14,7 +14,7 @@
             </select>
         </div>
         <div class="col-md-2">
-            <label for="selectTipo" class="form-label">TIPO PAGO</label>
+            <label for="selectTipo" class="form-label">TIPO REPORTE</label>
             <select class="form-select form-select-sm" aria-label=".form-select-sm example" id="selectTipo">
                 <option value="">Seleccione...</option>
                 <option value="1">Pendientes</option>
@@ -47,7 +47,7 @@
     </div>
 </div>
 <div class="mt-2 bg-light" id="resultadoReporte">
-    <table class="table table-hover table-sm pt-1" id="tbReportesPP" style="display:none;">
+    <table class="table table-hover table-sm pt-1 w-100" id="tbReportesPP" style="display:none;">
         <thead class="bg-primary text-white text-center">
             <tr>
                 <th width="10%">Correlativo</th>
@@ -62,7 +62,7 @@
         <tbody id="resultadosPP">
         </tbody>
     </table>
-    <table class="table table-hover table-sm pt-1" id="tbReportesPG" style="display:none;">
+    <table class="table table-hover table-sm pt-1 w-100" id="tbReportesPG" style="display:none;">
         <thead class="bg-primary text-white text-center">
             <tr>
                 <th width="10%">Correlativo</th>
@@ -99,8 +99,23 @@
         }
 
         function GenerarReporte() {
+            $("#resultadosPP").html("");
+            $("#resultadosPG").html("");
             $("#tbReportesPP").css("display", "none");
             $("#tbReportesPG").css("display", "none");
+            
+
+            if ($("#selectConcepto").val().length == 0) {
+                alert("Debe seleccionar un concepto de pagos");
+                $("#selectConcepto").focus();
+                return;
+            }
+
+            if ($("#selectTipo").val().length == 0 && $("#selectConcepto").val() == "M") {
+                alert("Debe seleccionar un tipo de reporte");
+                $("#selectTipo").focus();
+                return;
+            }
 
             $.ajax({
                 method: 'GET',
@@ -114,18 +129,21 @@
                     tipo_reporte: $("#selectTipo").val()
                 }
             }).then((response) => {
+                console.log(response);
                 PresentarResultado(response);                
             });
         }
 
         function PresentarResultado(data) {
             // 1=Pendientes, 2=Pagados
-            if ($("#selectTipo").val() == "1") {
+            if ($("#selectTipo").val() == 1) {
                 $("#tbReportesPP").css("display", "block");
                 var rows = "";
                 var contenido = 0;
+                
 
                 data.forEach(item => {
+                    contenido = 1;
                     rows += "" +
                         "<tr>" +
                         "   <td>" + item.correlativo + "</td>" +
@@ -138,12 +156,19 @@
                         "</tr>";
                 });
 
+                if (contenido == 0) {
+                    rows = "<tr><td colspan='7' class='text-center'>No se encontraron datos para el reporte</td></tr>";
+                }
+
+                $("#resultadosPP").html(rows);
+
             } else {
                 $("#tbReportesPG").css("display", "block");
                 var rows = "";
                 var contenido = 0;
 
                 data.forEach(item => {
+                    contenido = 1;
                     rows += "" +
                         "<tr>" +
                         "   <td>" + item.correlativo + "</td>" +
@@ -156,6 +181,12 @@
                         "   <td>" + item.monto + "</td>" +
                         "</tr>";
                 });
+
+                if (contenido == 0) {
+                    rows = "<tr><td colspan='8' class='text-center'>No se encontraron datos para el reporte</td></tr>";
+                }
+
+                $("#resultadosPG").html(rows);
             }
         }
     </script>
